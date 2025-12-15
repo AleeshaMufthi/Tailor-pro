@@ -1,9 +1,9 @@
 import Header from "@/components/Header";
 
-export default function LandingLayout({ children }) {
+export default function LandingLayout({ children }: { children: React.ReactNode}) {
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <main>{children}</main>
     </>
   );

@@ -25,7 +25,7 @@ export default function Page() {
   const repeated = [...logos, ...logos, ...logos];
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen">
       <Waves
         lineColor="#D3D3D3"
         backgroundColor="rgba(255,255,255,0.06)"

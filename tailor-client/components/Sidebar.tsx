@@ -16,18 +16,18 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-white shadow-lg min-h-screen p-6 flex flex-col">
+    <aside className="w-64 bg-white shadow-lg min-h-screen p-12 flex flex-col">
       
       {/* LOGO */}
-      <div className="flex items-center gap-2 mb-10">
-        <img
+      <div className="flex items-center gap-2 mb-20">
+        {/* <img
           src="/dressmaker.png"
           alt="TailorPro Logo"
           className="h-14 w-14 object-contain"
         />
         <span className="font-bold text-2xl text-gray-900">
           Tailor<span className="text-emerald-500">Pro</span>
-        </span>
+        </span> */}
       </div>
 
       {/* MENU */}

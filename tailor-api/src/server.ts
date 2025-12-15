@@ -11,6 +11,7 @@ import protectedRoutes from './routes/protected'
 import userRoutes from './routes/userRoutes'
 import customerRoutes from './routes/customerRoutes'
 import orderRoutes from './routes/orderRoutes'
+import measurementRoutes from './routes/measurementRoutes'
 
 dotenv.config()
 connectDB();
@@ -32,6 +33,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/measurements", measurementRoutes);
 
 app.use("/api/token", refreshRoute);
 app.use("/api/protected", protectedRoutes);

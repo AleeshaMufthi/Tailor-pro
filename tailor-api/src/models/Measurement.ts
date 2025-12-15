@@ -1,28 +1,34 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IMeasurement extends Document {
-
   type?: string;
-
   values?: Map<string, string>;
-
-  images?: string;
-
+  images?: {
+    url: string;
+    publicId: string;
+  }[];
 }
 
 const measurementSchema = new Schema<IMeasurement>(
   {
+    type: { type: String },
 
-  type: { type: String, required: true }, 
+    values: {
+      type: Map,
+      of: String,
+    },
 
-  values: { type: Map, of: String }, // key: measurement name, value: measurement e.g. "chest": "38"
-
-  images: [{ url: String, publicId: String }], 
-
+    images: [
+      {
+        url: { type: String },
+        publicId: { type: String },
+      },
+    ],
   },
-
   { timestamps: true }
-
 );
 
-export default mongoose.model<IMeasurement>("Measurement", measurementSchema);
+export default mongoose.model<IMeasurement>(
+  "Measurement",
+  measurementSchema
+);

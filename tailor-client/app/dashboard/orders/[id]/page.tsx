@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import api from "@/lib/axios";
 import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 
 export default function OrderDetails() {
 
@@ -54,6 +55,11 @@ export default function OrderDetails() {
 
   return (
     <div className="p-6 space-y-6">
+
+       <Link href="/dashboard/orders" className="text-gray-600 flex items-center gap-1">
+  <ChevronLeft size={20} />
+  Back to Orders
+</Link>
 
       <div className="bg-white p-5 border rounded-lg shadow">
         <h1 className="font-bold text-2xl mb-2">Invoice</h1>

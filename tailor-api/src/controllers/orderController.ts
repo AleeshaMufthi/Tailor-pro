@@ -6,7 +6,7 @@ import { generateOrderNumber } from "../utils/generateOrderNumber";
 
 export const createOrder = async (req: Request, res: Response) => {
   try {
-
+  console.log(req.body, "Creating new order with data");
     const {
       customerId,
       outfits,                 // array of outfitObjects (each converted to OrderItem)
@@ -32,10 +32,10 @@ export const createOrder = async (req: Request, res: Response) => {
       // item = {name, type, specialInstructions, referenceImages[], audioUrl, inspirationLink ...}
 
       // Save measurements if present
-      let measurementDoc = null;
-      if (item.measurements && Object.keys(item.measurements).length > 0) {
-        measurementDoc = await Measurement.create(item.measurements);
-      }
+      // let measurementDoc = null;
+      // if (item.measurements && Object.keys(item.measurements).length > 0) {
+      //   measurementDoc = await Measurement.create(item.measurements);
+      // }
 
       // Create OrderItem
       const orderItem = await OrderItem.create({
@@ -47,7 +47,7 @@ export const createOrder = async (req: Request, res: Response) => {
         audioUrl: item.audioUrl || "",
         specialInstructions: item.specialInstructions || "",
         referenceImages: item.referenceImages || [],
-        measurements: measurementDoc?._id || null,
+        measurements: item.measurements || null,
         stitchOptions: item.stitchOptions || {},
         stitchingPrice: item.stitchingPrice || 0,
         additionalPrice: item.additionalPrice || 0,
@@ -78,7 +78,7 @@ export const createOrder = async (req: Request, res: Response) => {
       advanceGiven,
       balanceDue,
       notes,
-      status: "active",
+      status: req.body.status || "active",
     });
 
     return res.status(201).json({
@@ -148,12 +148,18 @@ export const getOrderById = async (req: Request, res: Response) => {
   try {
     const order = await Order.findById(req.params.id)
       .populate("customer")
-      .populate("items");
+        .populate({
+    path: "items",
+    populate: {
+      path: "measurements",
+      model: "Measurement",
+    },
+  });
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
-
+   console.log("Fetched order by ID:", order)
     return res.json({ order });
   } catch (err: any) {
     return res.status(500).json({ message: err.message });

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import api from "@/lib/axios";
 import { useParams } from "next/navigation";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 
 export default function CustomerDetailsPage() {
     
@@ -39,11 +41,17 @@ export default function CustomerDetailsPage() {
 
   return (
     <div className="p-6">
+
+             <Link href="/dashboard/customers" className="text-gray-600 flex items-center gap-1 mb-4">
+        <ChevronLeft size={20} />
+        Back to Customers
+      </Link>
+
       <h1 className="text-2xl font-semibold mb-4">Customer Details</h1>
 
       <div className="bg-white p-6 rounded-lg shadow space-y-3">
 
-        <p><strong>Name:</strong> {customer.name}</p>
+        <p><strong>Customer Name:</strong> {customer.name}</p>
         <p><strong>Phone:</strong> {customer.phone}</p>
         <p><strong>Email:</strong> {customer.email}</p>
         <p><strong>Address:</strong> {customer.address}</p>

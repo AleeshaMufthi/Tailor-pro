@@ -1,7 +1,7 @@
 import './globals.css'
 import { ReactNode } from 'react'
 import { AuthProvider } from './context/AuthContext'
-// import Header from '@/components/Header'
+import Header from '@/components/Header'
 
 export const metadata = {
   title: 'Tailor Pro - Tailor Management',
@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <AuthProvider>
           {/* <div className="min-h-screen bg-gray-50 text-gray-900"> */}
             
-            {/* <Header /> */}
+            <Header />
 
             {/* <main> */}
               {children}

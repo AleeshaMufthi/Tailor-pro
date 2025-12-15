@@ -3,11 +3,16 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import api from "@/lib/axios";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 
 export default function OutfitDetailsPage() {
   const params = useParams();
   const orderId = params.id;
   const itemId = params.itemId;
+
+  console.log("params", params);
+
 
   const [order, setOrder] = useState<any>(null);
   const [item, setItem] = useState<any>(null);
@@ -25,6 +30,8 @@ export default function OutfitDetailsPage() {
       const orderData = res.data.order;
 
       const foundItem = orderData.items?.find((i: any) => i._id === itemId);
+
+      console.log("Fetched outfit details:", foundItem);
 
       setOrder(orderData);
       setItem(foundItem);
@@ -45,6 +52,12 @@ export default function OutfitDetailsPage() {
 
   return (
     <div className="p-6 space-y-6">
+
+      <Link href="/dashboard/orders" className="text-gray-600 flex items-center gap-1">
+  <ChevronLeft size={20} />
+  Back to Orders
+</Link>
+
       <h1 className="text-2xl font-bold text-emerald-700">
         Outfit Details — {item.name}
       </h1>
@@ -52,13 +65,13 @@ export default function OutfitDetailsPage() {
       {/* Order Info */}
       <div className="bg-white p-5 rounded-lg shadow border">
         <p><strong>Order Number:</strong> {order.orderNumber}</p>
-        <p><strong>Customer:</strong> {order.customer?.name}</p>
+        <p><strong>Customer Name:</strong> {order.customer?.name}</p>
       </div>
 
       {/* Outfit Info */}
       <div className="bg-white p-5 rounded-lg shadow border space-y-4">
 
-        <p><strong>Outfit Name:</strong> {item.name}</p>
+        <p><strong>Outfit:</strong> {item.name}</p>
         <p><strong>Quantity:</strong> {item.quantity}</p>
 
         {/* Update Status */}
@@ -112,7 +125,7 @@ export default function OutfitDetailsPage() {
               {item.referenceImages.map((img: string, idx: number) => (
                 <img
                   key={idx}
-                  src={img}
+                  src={img.url}
                   className="w-full h-32 object-cover rounded-md shadow"
                 />
               ))}
@@ -126,18 +139,20 @@ export default function OutfitDetailsPage() {
         )}
 
         {/* Measurements */}
-        {item.measurements && (
-          <div>
-            <h3 className="font-semibold mt-3">Measurements</h3>
-            <ul className="ml-4 list-disc">
-              {Object.entries(item.measurements).map(([key, val]) => (
-                <li key={key}>
-                  <strong>{key}:</strong> {val}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+       {/* Measurements */}
+{item.measurements?.values && (
+  <div>
+    <h3 className="font-semibold mt-3">Measurements</h3>
+    <ul className="ml-4 list-disc">
+      {Object.entries(item.measurements.values).map(([key, val]) => (
+        <li key={key}>
+          <strong>{key}:</strong> {val}
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
 
         {/* Stitch Options */}
         {item.stitchOptions && Object.keys(item.stitchOptions).length > 0 && (
