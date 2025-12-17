@@ -57,11 +57,13 @@ export default function OtpPage() {
 
       setAccessToken(res.data.accessToken)
 
-      if (res.data.user.isProfileCompleted) {
+      if (!res.data.user.isProfileCompleted) {
 
-        router.push("/dashboard");
-      } else {
         router.push("/profile");
+      } else if (res.data.user.role === "staff") {
+        router.push("/dashboard/orders");
+      } else{
+        router.push("/dashboard")
       }
      
     } catch (err: any) {

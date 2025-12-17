@@ -20,6 +20,12 @@ export interface IOrder extends Document {
 
     status?: "draft" | "active" | "past_due" | "upcoming" | "pending_payment" | "delivered" | "cancelled";
 
+    additionalCharges?: {
+    reason: string;
+    amount: number;
+    createdAt: Date;
+    }[];
+
     createdAt: Date;
 
     updatedAt?: Date;
@@ -55,6 +61,15 @@ const orderSchema = new Schema<IOrder>(
     enum: ["draft","active","past_due","upcoming","pending_payment","delivered","cancelled"], 
     default: "draft" 
   },
+
+  additionalCharges: [
+  {
+    reason: { type: String, required: true },
+    amount: { type: Number, required: true },
+    createdAt: { type: Date, default: Date.now }
+  }
+],
+
 
   createdAt: { type: Date, default: Date.now },
 

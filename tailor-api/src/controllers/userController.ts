@@ -21,6 +21,7 @@ export const getUser = async (req: Request, res: Response) => {
         userPhoto: user.userPhoto || "",
         shopPhoto: user.shopPhoto || "",
         phone: user.phone || "",
+        role: user.role,
       },
     });
   } catch (err) {

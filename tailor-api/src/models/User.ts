@@ -23,6 +23,12 @@ export interface IUser extends Document {
   otp?: string;
   
   otpExpires?: Date;
+
+  role?: "owner" | "staff";
+
+  password?: string; // add this
+createdBy?: mongoose.Schema.Types.ObjectId;
+
 }
 
 const userSchema = new Schema<IUser>(
@@ -51,6 +57,23 @@ const userSchema = new Schema<IUser>(
     otp: String,
 
     otpExpires: Date,
+
+    role: {
+  type: String,
+  enum: ["owner", "staff"],
+  default: "owner" // the first registered user will be owner
+},
+
+password: {
+  type: String,
+  select: false, // security
+},
+
+createdBy: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User",
+},
+
 
   },
 

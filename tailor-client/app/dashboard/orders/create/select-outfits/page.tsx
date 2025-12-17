@@ -67,16 +67,16 @@ export default function SelectOutfitsPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-xl font-semibold">Select Outfits</h1>
+      <h1 className="text-2xl font-semibold text-black">Select Outfits</h1>
 
       {/* Outfit Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-10">
         {defaultOutfits.map((o) => {
           const isSelected = selected.some((s) => s.name === o.name);
           return (
             <div
               key={o.name}
-              className={`relative h-32 w-32 border rounded-lg overflow-hidden cursor-pointer flex items-center justify-center transition-transform ${
+              className={`relative h-48 w-48 border rounded-lg overflow-hidden cursor-pointer flex items-center justify-center transition-transform ${
                 isSelected ? "ring-4 ring-emerald-500 scale-105" : "hover:scale-105"
               }`}
               onClick={() => toggleOutfit(o)}
@@ -107,11 +107,11 @@ export default function SelectOutfitsPage() {
           placeholder="Add custom outfit"
           value={customName}
           onChange={(e) => setCustomName(e.target.value)}
-          className="flex-1 border p-2 rounded"
+          className="border p-2 rounded"
         />
         <button
           onClick={addCustomOutfit}
-          className="px-4 py-2 bg-emerald-600 text-white rounded"
+          className="px-4 py-2 bg-emerald-600 font-semibold hover:bg-emerald-800 text-black rounded-full"
         >
           Add
         </button>
@@ -128,7 +128,7 @@ export default function SelectOutfitsPage() {
               <input
                 type="number"
                 min={1}
-                className="border p-1 w-20"
+                className="border p-1 w-16"
                 value={item.quantity}
                 onChange={(e) => updateQty(i, Number(e.target.value))}
               />
@@ -142,9 +142,9 @@ export default function SelectOutfitsPage() {
 
       <button
         onClick={next}
-        className="mt-6 px-4 py-2 bg-emerald-600 text-white rounded"
+        className="mt-6 px-4 py-2 border border-emerald-600 text-emerald-600 rounded-full font-semibold hover:bg-emerald-600 hover:text-white transition"
       >
-        Next: Order Details
+        Continue
       </button>
     </div>
   );

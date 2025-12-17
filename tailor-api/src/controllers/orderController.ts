@@ -10,8 +10,8 @@ export const createOrder = async (req: Request, res: Response) => {
     const {
       customerId,
       outfits,                 // array of outfitObjects (each converted to OrderItem)
-      trialDate,
-      deliveryDate,
+      // trialDate,
+      // deliveryDate,
       advanceGiven = 0,
       notes,
     } = req.body;
@@ -51,6 +51,8 @@ export const createOrder = async (req: Request, res: Response) => {
         stitchOptions: item.stitchOptions || {},
         stitchingPrice: item.stitchingPrice || 0,
         additionalPrice: item.additionalPrice || 0,
+        trialDate: item.trialDate ? new Date(item.trialDate) : null,
+        deliveryDate: item.deliveryDate ? new Date(item.deliveryDate) : null,
       });
 
       createdItemIds.push(orderItem._id);
@@ -72,8 +74,8 @@ export const createOrder = async (req: Request, res: Response) => {
       orderNumber,
       customer: customerId,
       items: createdItemIds,
-      trialDate,
-      deliveryDate,
+      // trialDate,
+      // deliveryDate,
       totalAmount,
       advanceGiven,
       balanceDue,
@@ -169,44 +171,83 @@ export const getOrderById = async (req: Request, res: Response) => {
 export const receivePayment = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-
-    const body = await req.body();
-    const { amount } = body;
+    const { amount } = req.body;
 
     if (!amount || amount <= 0) {
-      return res.json(
-        { error: "Invalid amount" },
-      );
+      return res.status(400).json({ error: "Invalid amount" });
     }
 
     const order = await Order.findById(id);
     if (!order) {
-      return res.json(
-        { error: "Order not found" },
-      );
+      return res.status(404).json({ error: "Order not found" });
     }
 
-    order.advanceGiven = (order.advanceGiven || 0) + amount;
+    // ❗ totalAmount NEVER changes here
 
-    order.balanceDue = order.totalAmount - order.advanceGiven;
+    const currentAdvance = order.advanceGiven || 0;
+    const newAdvance = currentAdvance + amount;
 
-    if (order.balanceDue < 0) {
-      order.balanceDue = 0;
-    }
+    order.advanceGiven = newAdvance;
+
+    order.balanceDue = Math.max(
+      order.totalAmount - newAdvance,
+      0
+    );
 
     await order.save();
 
     return res.json({
-      message: "Payment updated",
+      message: "Payment received successfully",
       order,
     });
-  }catch (err: any) {
-    console.log("PAYMENT UPDATE ERROR:", err);
-    return res.json(
-      { error: "Server error" }
-    );
+  } catch (err) {
+    console.error("RECEIVE PAYMENT ERROR:", err);
+    return res.status(500).json({ error: "Server error" });
   }
-}
+};
+
+
+
+export const addExtraCharge = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { reason, amount } = req.body;
+
+    if (!reason || !amount || amount <= 0) {
+      return res.status(400).json({ error: "Invalid charge data" });
+    }
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    // Add charge
+    order.additionalCharges = order.additionalCharges || [];
+    order.additionalCharges.push({
+      reason,
+      amount,
+      createdAt: new Date(),
+    });
+
+    // Update totals
+    order.totalAmount = (order.totalAmount || 0) + amount;
+    order.balanceDue = (order.balanceDue || 0) + amount;
+
+    await order.save();
+
+    res.json({
+      message: "Additional charge added",
+      order,
+    });
+  } catch (err) {
+    console.error("ADD CHARGE ERROR:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+
 
 
 // update outfit status

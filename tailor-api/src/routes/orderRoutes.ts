@@ -1,5 +1,5 @@
 import express from "express";
-import { createOrder, getAllOrders, updateOrderStatus, getOrderById, updateOutfitStatus, receivePayment } from "../controllers/orderController";
+import { createOrder, getAllOrders, updateOrderStatus, getOrderById, updateOutfitStatus, receivePayment, addExtraCharge } from "../controllers/orderController";
 
 const router = express.Router()
 
@@ -11,7 +11,10 @@ router.patch("/:orderId/status", updateOrderStatus);
 
 router.get("/:id", getOrderById);
 
-router.patch(":id/receive-payment", receivePayment); 
+router.patch("/:id/receive-payment", receivePayment); 
+
+router.patch("/:id/add-extra-charge", addExtraCharge);
+
 
 router.patch("/item/:itemId/status", updateOutfitStatus)
 

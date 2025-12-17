@@ -28,6 +28,10 @@ export interface IOrderItem extends Document {
 
     status?: "accepted" | "cutting" | "stitching" | "finishing" | "completed";
 
+    trialDate?: Date,
+
+    deliveryDate?: Date,
+
 }
 
 const orderitemSchema = new Schema<IOrderItem>(
@@ -59,6 +63,10 @@ const orderitemSchema = new Schema<IOrderItem>(
   additionalPrice: { type: Number, default: 0 }, 
 
   status: { type: String, enum: ["accepted","cutting","stitching","finishing","completed"], default: "accepted" },
+
+  trialDate: Date,
+
+  deliveryDate: Date,
   
 },
   { timestamps: true }

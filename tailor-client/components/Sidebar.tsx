@@ -2,32 +2,37 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function Sidebar() {
   const pathname = usePathname();
 
-  const menuItems = [
-    { name: "Dashboard", href: "/dashboard" },
-    { name: "Orders", href: "/dashboard/orders" },
-    { name: "Customers", href: "/dashboard/customers" },
-    { name: "Smart Calendar", href: "/dashboard/calendar" },
-    { name: "FAQs", href: "/dashboard/faq" },
-    { name: "Privacy Policy", href: "/dashboard/policy" },
-  ];
+const { user, loading } = useAuth();
+
+if (loading) return <p>Loading...</p>;
+if (!user) return null;
+
+const menuItems = [
+  ...(user.role === "owner"
+    ? [
+        { name: "Dashboard", href: "/dashboard" },
+        { name: "Add Staff", href: "/dashboard/staff" },
+      ]
+    : []),
+  { name: "Orders", href: "/dashboard/orders" },
+  { name: "Customers", href: "/dashboard/customers" },
+  { name: "Smart Calendar", href: "/dashboard/calendar" },
+  { name: "FAQs", href: "/dashboard/faq" },
+  { name: "Privacy Policy", href: "/dashboard/policy" },
+];
+
 
   return (
     <aside className="w-64 bg-white shadow-lg min-h-screen p-12 flex flex-col">
       
       {/* LOGO */}
       <div className="flex items-center gap-2 mb-20">
-        {/* <img
-          src="/dressmaker.png"
-          alt="TailorPro Logo"
-          className="h-14 w-14 object-contain"
-        />
-        <span className="font-bold text-2xl text-gray-900">
-          Tailor<span className="text-emerald-500">Pro</span>
-        </span> */}
+       
       </div>
 
       {/* MENU */}

@@ -149,8 +149,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto mt-12 bg-white p-6 rounded-xl shadow">
-      <h1 className="text-2xl font-semibold mb-6">My Profile</h1>
+    <div className="max-w-2xl mx-auto mt-20 bg-white p-6 rounded-xl shadow">
+      <h1 className="text-2xl font-semibold mb-6">Boutique Owner Profile</h1>
 
       {/* ========== VIEW MODE ========== */}
       {!isEditing && (

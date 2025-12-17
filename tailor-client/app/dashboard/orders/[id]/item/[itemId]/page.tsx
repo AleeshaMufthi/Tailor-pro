@@ -6,167 +6,183 @@ import api from "@/lib/axios";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
-export default function OutfitDetailsPage() {
+export default function OrderDetailsPage() {
   const params = useParams();
-  const orderId = params.id;
-  const itemId = params.itemId;
-
-  console.log("params", params);
-
+  const orderId = params.id as string;
 
   const [order, setOrder] = useState<any>(null);
-  const [item, setItem] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchOutfitDetails();
+    fetchOrder();
   }, []);
 
-  const fetchOutfitDetails = async () => {
+  const fetchOrder = async () => {
     setLoading(true);
-
     try {
       const res = await api.get(`/api/orders/${orderId}`);
-      const orderData = res.data.order;
-
-      const foundItem = orderData.items?.find((i: any) => i._id === itemId);
-
-      console.log("Fetched outfit details:", foundItem);
-
-      setOrder(orderData);
-      setItem(foundItem);
+      setOrder(res.data.order);
     } catch (err) {
-      console.error("Error fetching outfit details:", err);
+      console.error("Error fetching order:", err);
     }
-
     setLoading(false);
   };
 
-  const updateOutfitStatus = async (status: string) => {
-    await api.patch(`/api/orders/item/${itemId}/status`, { status });
-    fetchOutfitDetails();
+  const updateOutfitStatus = async (itemId: string, status: string) => {
+    try {
+      await api.patch(`/api/orders/item/${itemId}/status`, { status });
+      fetchOrder();
+    } catch (err) {
+      console.error("Failed to update status", err);
+    }
   };
 
   if (loading) return <p className="p-6">Loading...</p>;
-  if (!item) return <p className="p-6 text-red-600">Outfit not found.</p>;
+  if (!order) return <p className="p-6 text-red-600">Order not found</p>;
 
   return (
     <div className="p-6 space-y-6">
-
-      <Link href="/dashboard/orders" className="text-gray-600 flex items-center gap-1">
-  <ChevronLeft size={20} />
-  Back to Orders
-</Link>
-
-      <h1 className="text-2xl font-bold text-emerald-700">
-        Outfit Details — {item.name}
+      {/* Back */}
+      <Link
+        href="/dashboard/orders"
+        className="text-gray-600 flex items-center gap-1"
+      >
+        <ChevronLeft size={20} />
+        Back to Orders
+      </Link>
+      <h1 className="text-2xl font-bold text-emerald-700">Outfit Details</h1>
+      {/* Header */}
+      <h1 className="text-lg font-bold text-gray-700">
+        Order Number: {order.orderNumber}
       </h1>
 
       {/* Order Info */}
-      <div className="bg-white p-5 rounded-lg shadow border">
-        <p><strong>Order Number:</strong> {order.orderNumber}</p>
+      <div className="bg-white p-5 rounded-lg shadow border grid md:grid-cols-1 gap-4 text-lg">
         <p><strong>Customer Name:</strong> {order.customer?.name}</p>
+        <p><strong className="">Total Amount:</strong> ₹{order.totalAmount}</p>
+        <p><strong>Advance Given:</strong> ₹{order.advanceGiven}</p>
       </div>
 
-      {/* Outfit Info */}
-      <div className="bg-white p-5 rounded-lg shadow border space-y-4">
-
-        <p><strong>Outfit:</strong> {item.name}</p>
-        <p><strong>Quantity:</strong> {item.quantity}</p>
-
-        {/* Update Status */}
-        <div className="flex gap-3 items-center mt-2">
-          <strong>Status:</strong>
-          <select
-            value={item.status}
-            onChange={(e) => updateOutfitStatus(e.target.value)}
-            className="border p-2 rounded"
+      {/* All Outfits */}
+      <div className="space-y-6">
+        {order.items.map((item: any, index: number) => (
+          <div
+            key={item._id}
+            className="bg-white p-5 rounded-lg shadow border space-y-4"
           >
-            <option value="accepted">Accepted</option>
-            <option value="cutting">Cutting</option>
-            <option value="stitching">Stitching</option>
-            <option value="finishing">Finishing</option>
-            <option value="completed">Completed</option>
-          </select>
-        </div>
+            {/* Outfit Header */}
+            <div className="flex justify-between items-center">
+              <h2 className="text-lg font-semibold">
+                {index + 1}. {item.name}
+              </h2>
 
-        <p><strong>Type:</strong> {item.type}</p>
-        <p><strong>Stitching Price:</strong> ₹{item.stitchingPrice}</p>
-
-        {/* Inspiration Link */}
-        {item.inspirationLink && (
-          <p>
-            <strong>Inspiration Link:</strong>{" "}
-            <a
-              href={item.inspirationLink}
-              target="_blank"
-              className="text-blue-600 underline"
-            >
-              View Link
-            </a>
-          </p>
-        )}
-
-        {/* Audio */}
-        {item.audioUrl && (
-          <div>
-            <strong>Audio Note:</strong>
-            <audio controls className="mt-2 w-full">
-              <source src={item.audioUrl} />
-            </audio>
-          </div>
-        )}
-
-        {/* Reference Images */}
-        {item.referenceImages?.length > 0 && (
-          <div>
-            <strong>Reference Images:</strong>
-            <div className="grid grid-cols-3 gap-3 mt-2">
-              {item.referenceImages.map((img: string, idx: number) => (
-                <img
-                  key={idx}
-                  src={img.url}
-                  className="w-full h-32 object-cover rounded-md shadow"
-                />
-              ))}
+              {/* Status */}
+              <select
+                value={item.status}
+                onChange={(e) =>
+                  updateOutfitStatus(item._id, e.target.value)
+                }
+                className="border border-emerald-700 p-2 rounded-full"
+              >
+                <option value="accepted">Accepted</option>
+                <option value="cutting">Cutting</option>
+                <option value="stitching">Stitching</option>
+                <option value="finishing">Finishing</option>
+                <option value="completed">Completed</option>
+              </select>
             </div>
+
+            {/* Basic Info */}
+            <div className="grid md:grid-cols-2 gap-3">
+              <p><strong>Type:</strong> {item.type}</p>
+              <p><strong>Quantity:</strong> {item.quantity}</p>
+            </div>
+
+            {/* Inspiration */}
+            {item.inspirationLink && (
+              <p>
+                <strong>Inspiration:</strong>{" "}
+                <a
+                  href={item.inspirationLink}
+                  target="_blank"
+                  className="text-blue-600 underline"
+                >
+                  View Link
+                </a>
+              </p>
+            )}
+
+            {/* Audio */}
+            {item.audioUrl && (
+              <div>
+                <strong>Audio Note:</strong>
+                <audio controls className="mt-2 w-full">
+                  <source src={item.audioUrl} />
+                </audio>
+              </div>
+            )}
+
+            {/* Reference Images */}
+            {item.referenceImages?.length > 0 && (
+              <div>
+                <strong>Reference Images:</strong>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+                  {item.referenceImages.map((img: any, idx: number) => (
+                    <img
+                      key={idx}
+                      src={img.url}
+                      className="w-full h-32 object-cover rounded shadow"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Instructions */}
+            {item.specialInstructions && (
+              <p>
+                <strong>Special Instructions:</strong>{" "}
+                {item.specialInstructions}
+              </p>
+            )}
+
+            {/* Measurements */}
+            {item.measurements?.values && (
+              <div>
+                <h3 className="font-semibold">Measurements</h3>
+                <ul className="ml-4 list-disc">
+                  {Object.entries(item.measurements.values).map(
+                    ([key, val]) => (
+                      <li key={key}>
+                        <strong>{key}:</strong> {val as string}
+                      </li>
+                    )
+                  )}
+                </ul>
+              </div>
+            )}
+
+              <p><strong>Stitching Price:</strong> ₹{item.stitchingPrice}</p>
+              <p><strong>Additional Price:</strong> ₹{item.additionalPrice}</p>
+
+            {/* Stitch Options */}
+            {item.stitchOptions &&
+              Object.keys(item.stitchOptions).length > 0 && (
+                <div>
+                  <h3 className="font-semibold">Stitch Options</h3>
+                  <ul className="ml-4 list-disc">
+                    {Object.entries(item.stitchOptions).map(
+                      ([key, val]) => (
+                        <li key={key}>
+                          <strong>{key}:</strong> {String(val)}
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              )}
           </div>
-        )}
-
-        {/* Special instructions */}
-        {item.specialInstructions && (
-          <p><strong>Special Instructions:</strong> {item.specialInstructions}</p>
-        )}
-
-        {/* Measurements */}
-       {/* Measurements */}
-{item.measurements?.values && (
-  <div>
-    <h3 className="font-semibold mt-3">Measurements</h3>
-    <ul className="ml-4 list-disc">
-      {Object.entries(item.measurements.values).map(([key, val]) => (
-        <li key={key}>
-          <strong>{key}:</strong> {val}
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
-
-
-        {/* Stitch Options */}
-        {item.stitchOptions && Object.keys(item.stitchOptions).length > 0 && (
-          <div>
-            <h3 className="font-semibold mt-3">Stitch Options</h3>
-            <ul className="ml-4 list-disc">
-              {Object.entries(item.stitchOptions).map(([key, val]) => (
-                <li key={key}>
-                  <strong>{key}:</strong> {val.toString()}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        ))}
       </div>
     </div>
   );

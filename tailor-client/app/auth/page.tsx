@@ -5,13 +5,13 @@ import api from "@/lib/axios";
 
 
 export default function AuthPage() {
-  const [mode, setMode] = useState<'google'|'otp'|'password'>('google')
+  const [mode, setMode] = useState<'google'|'otp'|'password'>('otp')
   const [email, setEmail] = useState("");
   const router = useRouter();
 
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center py-16">
+    <div className="min-h-[70vh] flex items-center justify-center py-20">
       <div className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="hidden md:flex flex-col justify-center gap-6 p-8 rounded-2xl bg-gradient-to-b from-emerald-50 to-white">
           <h2 className="text-2xl font-bold">Welcome to TailorPro</h2>
@@ -20,9 +20,9 @@ export default function AuthPage() {
 
         <div className="bg-white p-6 rounded-2xl shadow">
           <div className="flex gap-2 mb-4">
-            <button onClick={() => setMode('google')} className={`flex-1 py-2 rounded ${mode==='google' ? 'bg-emerald-500 text-white' : 'border'}`}>Google</button>
+            {/* <button onClick={() => setMode('google')} className={`flex-1 py-2 rounded ${mode==='google' ? 'bg-emerald-500 text-white' : 'border'}`}>Google</button> */}
             <button onClick={() => setMode('otp')} className={`flex-1 py-2 rounded ${mode==='otp' ? 'bg-emerald-500 text-white' : 'border'}`}>Email OTP</button>
-            <button onClick={() => setMode('password')} className={`flex-1 py-2 rounded ${mode==='password' ? 'bg-emerald-500 text-white' : 'border'}`}>Email / Password</button>
+            {/* <button onClick={() => setMode('password')} className={`flex-1 py-2 rounded ${mode==='password' ? 'bg-emerald-500 text-white' : 'border'}`}>Email / Password</button> */}
           </div>
 
           <div>

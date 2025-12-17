@@ -1,6 +1,7 @@
 "use client";
 
 import Sidebar from "@/components/Sidebar";
+import { OrderProvider } from "../context/OrderContext";
 
 export default function DashboardLayout({
   children,
@@ -16,7 +17,8 @@ export default function DashboardLayout({
         <div className="h-20 shrink-0" />
 
         <main className="p-6">
-          {children}
+            <OrderProvider>  {children}</OrderProvider>
+        
         </main>
       </div>
     </div>

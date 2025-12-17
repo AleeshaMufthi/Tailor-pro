@@ -8,82 +8,90 @@ export default function OrderSummaryPage() {
   const { orderData } = useOrder();
   const router = useRouter();
 
-  // Common function for building outfits payload
   const buildOutfitsPayload = () =>
-    (orderData.outfits || []).map((o: any) => ({
-      name: o.name,
-      category: o.category || "",
-      quantity: o.quantity || 1,
-      inspirationLink: orderData.inspirationLink || "",
-      audioUrl: orderData.audioUrl || "",
-      specialInstructions: orderData.notes || "",
-      referenceImages: (orderData.referenceImages || []).map((img: any) =>
-        typeof img === "string" ? { url: img, publicId: null } : img
+    (orderData.outfits || []).map((item: any) => ({
+      name: item.name,
+      category: item.category || "",
+      quantity: item.quantity || 1,
+      type: item.type || "stitching",
+      inspirationLink: item.inspirationLink || "",
+      audioUrl: item.audioUrl || "",
+      specialInstructions: item.specialInstructions || "",
+      referenceImages: (item.referenceImages || []).map((img: any) =>
+        typeof img === "string"
+          ? { url: img, publicId: null }
+          : img
       ),
-      measurements: orderData.measurements || null,
-      stitchOptions: orderData.stitchOptions || {},
-      stitchingPrice: o.stitchingPrice ?? orderData.totalAmount ?? 0,
-      additionalPrice: o.additionalPrice ?? 0,
+      measurements: item.measurements || null,
+      stitchOptions: item.stitchOptions || {},
+      stitchingPrice: Number(item.stitchingPrice || 0),
+      additionalPrice: Number(item.additionalPrice || 0),
+      trialDate: item.trialDate || null,        // 👈 ADD
+      deliveryDate: item.deliveryDate || null,
     }));
 
-  // CONFIRM ORDER (ACTIVE)
-  const confirmOrder = async () => {
-    try {
-      const payload = {
-        customerId: orderData.customerId,
-        trialDate: orderData.trialDate,
-        deliveryDate: orderData.deliveryDate,
-        advanceGiven: orderData.advanceGiven || 0,
-        notes: orderData.notes || "",
-        outfits: buildOutfitsPayload(),
-        status: "active",
-      };
+  const validate = () => {
+    if (!orderData.customerId) return "Customer missing";
+    if (!orderData.outfits?.length) return "No outfits selected";
 
-      const res = await api.post("/api/orders/create", payload);
-      router.push(`/dashboard/orders`);
-    } catch (err: any) {
-      console.error(err);
-      alert(err?.response?.data?.message || "Failed to create order");
+    for (const o of orderData.outfits) {
+      if (!o.type) return `Type missing for ${o.name}`;
+      if (!o.stitchingPrice) return `Price missing for ${o.name}`;
     }
+
+    return null;
   };
 
-  // SAVE AS DRAFT
-  const saveAsDraft = async () => {
+  const submit = async (status: "active" | "draft") => {
+    const error = status === "active" ? validate() : null;
+    if (error) return alert(error);
+
     try {
       const payload = {
         customerId: orderData.customerId,
-        trialDate: orderData.trialDate,
-        deliveryDate: orderData.deliveryDate,
         advanceGiven: orderData.advanceGiven || 0,
         notes: orderData.notes || "",
         outfits: buildOutfitsPayload(),
-        status: "draft", // 👈 KEY DIFFERENCE
+        status,
       };
 
-      const res = await api.post("/api/orders/create", payload);
-      router.push(`/dashboard/orders`);
+      console.log("Submitting order payload:", payload)
+
+      await api.post("/api/orders/create", payload);
+      router.push("/dashboard/orders");
     } catch (err: any) {
       console.error(err);
-      alert(err?.response?.data?.message || "Failed to save draft");
+      alert("Order submission failed");
     }
   };
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-6">
       <h1 className="text-xl font-semibold">Order Summary</h1>
 
-      <pre className="bg-gray-100 p-4 rounded text-sm">{JSON.stringify(orderData, null, 2)}</pre>
+      {orderData.outfits.map((o: any, i: number) => (
+        <div key={i} className="border p-4 rounded bg-white">
+          <h3 className="font-semibold">{o.name}</h3>
+          <p>Type: {o.type}</p>
+          <p>Quantity: {o.quantity}</p>
+          <p>Stitching Price: ₹{o.stitchingPrice}</p>
+          <p>Additional Price: ₹{o.additionalPrice}</p>
+          <p>Delivery Date: {o.deliveryDate || "-"}</p>
+        </div>
+      ))}
+
+
 
       <div className="flex gap-4">
         <button
-          onClick={confirmOrder}
+          onClick={() => submit("active")}
           className="px-4 py-2 bg-emerald-600 text-white rounded"
         >
           Confirm Order
         </button>
 
         <button
-          onClick={saveAsDraft}
+          onClick={() => submit("draft")}
           className="px-4 py-2 bg-gray-600 text-white rounded"
         >
           Save as Draft

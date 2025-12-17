@@ -138,14 +138,7 @@ const statusBadge: any = {
 
     {/* Meta info */}
     <div className="mt-4 space-y-2 text-sm text-gray-700">
-      <div className="flex justify-between">
-        <span>Delivery</span>
-        <span>
-          {order.deliveryDate
-            ? new Date(order.deliveryDate).toLocaleDateString()
-            : '-'}
-        </span>
-      </div>
+     
 
       <div className="flex justify-between">
         <span>Total</span>

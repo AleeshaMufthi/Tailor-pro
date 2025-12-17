@@ -5,10 +5,25 @@ import React, { createContext, useContext, useState } from "react";
 export interface OutfitItem {
   name: string;
   quantity: number;
+
   category?: string;
+  type?: "stitching" | "alteration";
+
   stitchingPrice?: number;
   additionalPrice?: number;
+
+  trialDate?: string;       // 👈 ADD
+  deliveryDate?: string;    // 👈 ADD
+
+  inspirationLink?: string;
+  audioUrl?: string;
+  referenceImages?: string[];
+  specialInstructions?: string;
+
+  measurements?: any;
+  stitchOptions?: any;
 }
+
 
 export interface OrderData {
   customerId: string;
@@ -22,8 +37,8 @@ export interface OrderData {
   totalAmount: number;
   advanceGiven: number;
   balance: number;
-  deliveryDate: string;
-  trialDate: string;
+  // deliveryDate: string;
+  // trialDate: string;
   measurements: Record<string, any>;
   stitchOptions: Record<string, any>;
 }
