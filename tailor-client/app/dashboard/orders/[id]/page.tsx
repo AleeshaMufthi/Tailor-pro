@@ -7,12 +7,25 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
 export default function OrderDetails() {
-  const { id } = useParams();
+  // const { id } = useParams();
+  const params = useParams<{ id: string }>();
+
+if (!params) {
+  // handle null case, e.g., show loading or error
+  return <div>Loading...</div>;
+}
+
+const id = params.id;
   const [order, setOrder] = useState<any>(null);
   const [amountReceived, setAmountReceived] = useState("");
 
   const [extraAmount, setExtraAmount] = useState("");
   const [extraReason, setExtraReason] = useState("");
+
+  type AdditionalCharge = {
+  reason: string;
+  amount: number;
+};
 
   const fetchOrder = async () => {
     const res = await api.get(`/api/orders/${id}`);
@@ -113,7 +126,7 @@ export default function OrderDetails() {
           </button>
         </div>
 
-        {order.additionalCharges?.map((c, i) => (
+        {order.additionalCharges?.map((c: AdditionalCharge, i: number) => (
   <div key={i} className="justify-between text-md">
     <span>{c.reason}</span>
     <span className="p-5 text-red-500 font-semibold">₹{c.amount}</span>

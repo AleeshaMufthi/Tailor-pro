@@ -7,8 +7,17 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
 export default function OrderDetailsPage() {
+  // const params = useParams();
+  // const orderId = params.id as string;
+
   const params = useParams();
-  const orderId = params.id as string;
+
+if (!params) {
+  // params is null, show loading or error
+  return <div>Loading...</div>;
+}
+
+const orderId = params.id as string;
 
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);

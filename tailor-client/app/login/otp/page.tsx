@@ -14,6 +14,7 @@ export default function OtpPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+     if (!searchParams) return;
   const e = searchParams.get("email");
     if (e) setEmail(e);
   }, [searchParams]);

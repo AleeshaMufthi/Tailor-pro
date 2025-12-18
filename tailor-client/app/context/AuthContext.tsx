@@ -9,6 +9,13 @@ type User = {
   name: string
   email: string
   isProfileCompleted: boolean
+  fullName: string;
+  shopName: string;
+  tailorType: "both" | "stitch" | "alteration"; // or string if flexible
+  phone: string;
+  userPhoto: string;
+  shopPhoto: string;
+  role: "owner" | "staff" | "other";
 }
 
 type AuthContextType = {
