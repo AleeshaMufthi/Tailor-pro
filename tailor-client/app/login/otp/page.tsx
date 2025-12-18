@@ -6,7 +6,7 @@ import api, { setAccessToken } from "@/lib/axios";
 
 export default function OtpPage() {
   const router = useRouter();
-  // const searchParams = useSearchParams();
+  const searchParams = useSearchParams();
  const [email, setEmail] = useState("");
 
   const [otp, setOtp] = useState(Array(6).fill(""));
@@ -14,11 +14,10 @@ export default function OtpPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const searchParams = useSearchParams();
      if (!searchParams) return;
-  const e = searchParams.get("email");
+  const e = searchParams?.get("email");
     if (e) setEmail(e);
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     if (timer === 0) return;

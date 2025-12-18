@@ -14,6 +14,8 @@ export default function Header() {
 
 useEffect(() => setMounted(true), []);
 
+  if (!mounted) return null;
+
   const isLoggedIn = !!user
 
   return (

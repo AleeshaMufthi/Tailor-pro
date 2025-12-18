@@ -5,7 +5,7 @@ import User  from "../models/User";
 import { OAuth2Client } from "google-auth-library";
 import { generateOTP } from "../utils/otpGenerator";
 import { generateAccessToken, generateRefreshToken } from "../utils/token";
-// import { sendEmail } from "../utils/emailService";
+import { sendEmail } from "../utils/emailService";
 
 // sendOtp
 export const sendOtp = async (req: Request, res: Response) => {
@@ -27,7 +27,7 @@ export const sendOtp = async (req: Request, res: Response) => {
     await user.save();
 
     // TODO: send email here via email service
-    // await sendEmail(email, "Your OTP", `Your OTP is ${otp}`);
+    await sendEmail(email, "Your OTP", `Your OTP is ${otp}`);
 
     return res.json({ message: "OTP sent successfully" });
   } catch (error) {
@@ -110,7 +110,7 @@ export const resendOtp = async (req: Request, res: Response) => {
     await user.save();
 
     // TODO: send email here
-    // await sendEmail(email, "Your OTP", `Your OTP is ${otp}`);
+    await sendEmail(email, "Your OTP", `Your OTP is ${otp}`);
 
     return res.json({ message: "OTP resent successfully" });
   } catch (err) {
