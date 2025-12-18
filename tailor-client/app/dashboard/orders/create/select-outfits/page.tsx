@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useOrder } from "@/app/context/OrderContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Check } from "lucide-react";
 
 interface Outfit {
@@ -21,14 +21,27 @@ const defaultOutfits: Outfit[] = [
 ];
 
 export default function SelectOutfitsPage() {
-  const router = useRouter();
-  const params = useSearchParams();
-  const customerId = params?.get("customerId") || "";
+  // const router = useRouter();
+  // const params = useSearchParams();
+  // const customerId = params?.get("customerId") || "";
 
 
+  // const { setOrderData } = useOrder();
+  // const [selected, setSelected] = useState<Outfit[]>([]);
+  // const [customName, setCustomName] = useState("");
+    const router = useRouter();
+  const searchParams = useSearchParams();
   const { setOrderData } = useOrder();
+
+  const [customerId, setCustomerId] = useState("");
   const [selected, setSelected] = useState<Outfit[]>([]);
   const [customName, setCustomName] = useState("");
+
+  useEffect(() => {
+    if (searchParams) {
+      setCustomerId(searchParams.get("customerId") || "");
+    }
+  }, [searchParams]);
 
   const toggleOutfit = (outfit: Outfit) => {
     const idx = selected.findIndex((s) => s.name === outfit.name);
