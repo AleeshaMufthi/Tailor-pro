@@ -23,7 +23,8 @@ const defaultOutfits: Outfit[] = [
 export default function SelectOutfitsPage() {
   const router = useRouter();
   const params = useSearchParams();
-  const customerId = params.get("customerId") || "";
+  const customerId = params?.get("customerId") || "";
+
 
   const { setOrderData } = useOrder();
   const [selected, setSelected] = useState<Outfit[]>([]);
