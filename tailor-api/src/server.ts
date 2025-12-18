@@ -21,10 +21,16 @@ const app = express()
 
 app.use(cookieParser());
 
+// app.use(cors({
+//   origin: "http://localhost:3000",
+//   credentials: true,
+// }))
+
 app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true,
-}))
+  origin: ["https://tailor-pro-sage.vercel.app"], // your frontend URL
+  credentials: true
+}));
+
 
 app.use(express.json())
 
