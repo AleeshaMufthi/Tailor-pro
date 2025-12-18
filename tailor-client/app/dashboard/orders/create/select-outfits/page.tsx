@@ -30,18 +30,17 @@ export default function SelectOutfitsPage() {
   // const [selected, setSelected] = useState<Outfit[]>([]);
   // const [customName, setCustomName] = useState("");
     const router = useRouter();
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
   const { setOrderData } = useOrder();
 
   const [customerId, setCustomerId] = useState("");
   const [selected, setSelected] = useState<Outfit[]>([]);
   const [customName, setCustomName] = useState("");
 
-  useEffect(() => {
-    if (searchParams) {
-      setCustomerId(searchParams.get("customerId") || "");
-    }
-  }, [searchParams]);
+useEffect(() => {
+  const params = useSearchParams();
+  if (params) setCustomerId(params.get("customerId") || "");
+}, []);
 
   const toggleOutfit = (outfit: Outfit) => {
     const idx = selected.findIndex((s) => s.name === outfit.name);
