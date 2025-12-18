@@ -21,10 +21,22 @@ const app = express()
 
 app.use(cookieParser());
 
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true,
-}))
+// app.use(cors({
+//   origin: "http://localhost:3000",
+//   credentials: true,
+// }))
+
+
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://tailor-management-sooty.vercel.app"
+    ],
+    credentials: true
+  })
+);
+
 
 
 // app.use(cors({
