@@ -1,3 +1,6 @@
+// app/login/otp/page.tsx
+export const dynamic = "force-dynamic";
+
 import { Suspense } from "react";
 import OtpClient from "./OtpClient";
 
@@ -8,3 +11,4 @@ export default function Page() {
     </Suspense>
   );
 }
+
