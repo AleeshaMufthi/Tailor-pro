@@ -37,8 +37,8 @@ export interface OrderData {
   totalAmount: number;
   advanceGiven: number;
   balance: number;
-  // deliveryDate: string;
-  // trialDate: string;
+  deliveryDate: string;
+  trialDate: string;
   measurements: Record<string, any>;
   stitchOptions: Record<string, any>;
 }
