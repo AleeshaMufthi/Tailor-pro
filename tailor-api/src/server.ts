@@ -31,7 +31,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://tailor-management-sooty.vercel.app"
+      "https://tailor-indol.vercel.app"
     ],
     credentials: true
   })
