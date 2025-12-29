@@ -21,13 +21,13 @@ useEffect(() => setMounted(true), []);
   return (
     <header
       className={clsx(
-        'fixed top-0 left-0 w-full z-50 transition-all duration-300',
+        'bg-transparent backdrop-blur left-0 w-full z-50 transition-all duration-300',
         isLoggedIn
-          ? 'bg-white shadow-sm backdrop-blur'
-          : 'bg-transparent'
+          ? 'bg-white shadow-sm backdrop-blur top-0 left-0 w-full z-50'
+          : 'bg-transparent backdrop-blur top-2 md:top-3 lg:top-5'
       )}
     >
-      <div className="w-full flex items-center justify-between h-20 px-2 md:px-6 lg:px-10">
+      <div className="w-full flex items-center justify-between h-28 px-2 md:px-8 lg:px-10">
         
         {/* Left: Logo */}
         <div className="flex items-center gap-10">
@@ -37,7 +37,7 @@ useEffect(() => setMounted(true), []);
               alt="TailorPro Logo"
               className="h-14 w-14 object-contain"
             />
-            <span className="font-bold text-lg text-black">
+            <span className="font-bold text-2xl text-black">
               Tailor<span className="text-emerald-500">Pro</span>
             </span>
           </div>
@@ -49,7 +49,7 @@ useEffect(() => setMounted(true), []);
                 <Link
                   key={link}
                   href={`#${link.toLowerCase()}`}
-                  className="relative group"
+                  className="relative group left-5"
                 >
                   {link}
                   <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-black transition-all duration-300 group-hover:w-full"></span>

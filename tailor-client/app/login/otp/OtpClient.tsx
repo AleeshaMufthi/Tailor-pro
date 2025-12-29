@@ -5,8 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import api, { setAccessToken } from "@/lib/axios";
 
 export default function OtpClient() {
+     const searchParams = useSearchParams();
   const router = useRouter();
-//   const searchParams = useSearchParams();
+ 
  const [email, setEmail] = useState("");
 
   const [otp, setOtp] = useState(Array(6).fill(""));
@@ -14,7 +15,7 @@ export default function OtpClient() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-  const searchParams = useSearchParams();
+  
   const e = searchParams?.get("email");
     if (e) setEmail(e);
   }, []);
