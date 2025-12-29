@@ -86,10 +86,7 @@ export default function AuthPage() {
           who are growing their brand with us.
         </p>
 
-        {/* <p className="text-gray-800 leading-relaxed text-base">
-          Log in to track every stitch, manage your client profiles, and deliver
-          perfectly fitted garments on time, every time.
-        </p> */}
+        
           </form>
         )}
 

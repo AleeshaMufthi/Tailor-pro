@@ -86,44 +86,73 @@ export default function OtpClient() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <h2 className="text-xl font-semibold mb-2">Enter OTP</h2>
-      <p className="text-sm text-gray-600 mb-6">{email}</p>
-      <div className="flex gap-3 mb-5">
-        {otp.map((digit, i) => (
-          <input
-            key={i}
-            id={`otp-${i}`}
-            type="text"
-            maxLength={1}
-            value={digit}
-            className="w-12 h-12 text-center border rounded-md text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            onChange={(e) => handleChange(e.target.value, i)}
-          />
-        ))}
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 sm:p-8 text-center">
 
-      <button
-        onClick={verifyOtp}
-        className="bg-emerald-600 text-white px-6 py-2 rounded-md w-48"
-      >
-      Verify OTP
-      </button>
+    {/* Heading */}
+    <h2 className="text-3xl font-semibold text-gray-900 mb-3">
+      Verify your email
+    </h2>
+    <p className="text-md text-gray-600 mb-6">
+      Enter the 6-digit code sent to <br />
+      <span className="font-medium text-gray-900">{email}</span>
+    </p>
 
-      {/* Timer */}
-      <div className="mt-4 text-sm text-gray-600">
-        {timer > 0 ? (
-          <p>Resend OTP in {timer}s</p>
-        ) : (
-          <button
-            disabled={loading}
-            onClick={resendOtp}
-            className="text-emerald-600 font-medium"
-          >
-            {loading ? "Sending..." : "Resend OTP"}
-          </button>
-        )}
-      </div>
+    {/* OTP Inputs */}
+    <div className="flex justify-center gap-2 sm:gap-3 mb-6">
+      {otp.map((digit, i) => (
+        <input
+          key={i}
+          id={`otp-${i}`}
+          type="text"
+          maxLength={1}
+          value={digit}
+          className="
+            w-11 h-11 sm:w-12 sm:h-12
+            text-center text-lg font-semibold
+            border rounded-lg
+            focus:outline-none focus:ring-2 focus:ring-emerald-500
+            transition
+          "
+          onChange={(e) => handleChange(e.target.value, i)}
+        />
+      ))}
     </div>
+         
+
+    {/* Verify Button */}
+    <button
+      onClick={verifyOtp}
+      className="
+        w-full bg-emerald-600 text-white
+        py-2.5 rounded-lg font-medium
+        hover:bg-emerald-700 transition
+      "
+    >
+      Verify OTP
+    </button>
+
+    {/* Timer / Resend */}
+    <div className="mt-5 text-sm text-gray-600">
+      {timer > 0 ? (
+        <p>
+          Didn’t receive the code?
+          <br />
+          <span className="font-medium">Resend in {timer}s</span>
+        </p>
+      ) : (
+        <button
+          disabled={loading}
+          onClick={resendOtp}
+          className="text-emerald-600 font-medium hover:underline disabled:opacity-50"
+        >
+          {loading ? "Sending..." : "Resend OTP"}
+        </button>
+      )}
+    </div>
+
+  </div>
+</div>
+
   );
 }
