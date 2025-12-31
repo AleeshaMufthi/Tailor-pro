@@ -31,7 +31,8 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://tailor-indol.vercel.app"
+      // "https://tailor-indol.vercel.app",
+      "https://tailor-3c2k7t9hy-aleeshamufthis-projects.vercel.app"
     ],
     credentials: true
   })
