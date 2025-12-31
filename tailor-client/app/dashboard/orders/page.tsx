@@ -34,6 +34,19 @@ const statusBadge: any = {
 }
 
 
+const getItemDates = (order: any) =>
+  (order.items || [])
+    .map((i: any) => i.deliveryDate)
+    .filter(Boolean)
+    .map((d: string) => new Date(d));
+
+    console.log(getItemDates,'item dates')
+
+const hasPastDueItem = (order: any, today: Date) =>
+  getItemDates(order).some((d: any) => d < today);
+
+const hasUpcomingItem = (order: any, today: Date) =>
+  getItemDates(order).some((d: any) => d > today);
 
 
   const fetchOrders = async () => {
@@ -72,8 +85,8 @@ const statusBadge: any = {
 
     if (filter === "active") return o.status === "active";
     if (filter === "draft") return o.status === "draft";
-    if (filter === "past_due") return delivery && delivery < today && o.status !== "delivered";
-    if (filter === "upcoming") return delivery && delivery > today && o.status === "active";
+    if (filter === "past_due") return ( hasPastDueItem(o, today) && o.status !== "delivered");
+    if (filter === "upcoming") return ( hasUpcomingItem(o, today) && o.status === "active");
     if (filter === "pending_payment") return (o.balanceDue || 0) > 0 && o.status === "delivered";
     if (filter === "delivered") return o.status === "delivered" && o.balanceDue == 0;
   

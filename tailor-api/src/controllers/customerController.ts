@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Customer from "../models/Customer";
+import Order from "../models/Order";
 
 export const createCustomer = async (req: Request, res: Response) => {
   try {
@@ -35,4 +36,22 @@ export const getCustomerById = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to fetch customer details" });
   }
 };
+
+export const getOrdersByCustomer = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    console.log(id, 'id')
+
+    const orders = await Order.find({ customer: id })
+      .sort({ createdAt: -1 });
+
+    console.log("Orders:", orders);
+    res.json({ orders });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch customer orders" });
+  }
+};
+
+
 

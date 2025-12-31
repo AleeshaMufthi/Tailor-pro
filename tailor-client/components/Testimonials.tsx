@@ -15,7 +15,7 @@ type Testimonial = {
 const testimonials: Testimonial[] = [
   { id: 1, name: "Rahi", role: "Boutique Owner", avatar: "/avatars/1.jpg", review: "My customers love the order tracking. It has reduced so many phone calls. Highly recommended!"},
   { id: 2, name: "Sanjaya", role: "Fashion Designer", avatar: "/avatars/2.jpg", review: "Saved me 10 hours a week! The AI voice feature is a game-changer for my shop."},
-  { id: 3, name: "Abhishek", role: "Payroll Manager", avatar: "/avatars/3.jpg", review: "Managing staff wages was a nightmare. TailorPro automated it perfectly. My team is happier." },
+  { id: 3, name: "Amber", role: "Payroll Manager", avatar: "/avatars/3.jpg", review: "Managing staff wages was a nightmare. TailorPro automated it perfectly. My team is happier." },
   { id: 4, name: "Arjun", role: "Tailor", avatar: "/avatars/4.jpg", review: "The low stock alerts for my fabrics are incredibly useful. I can reorder before I run out." },
   { id: 5, name: "Raveen", role: "Studio Owner", avatar: "/avatars/6.jpg", review: "Got to know daily Work Reports & Tailor Performance Tracking" },
 ];

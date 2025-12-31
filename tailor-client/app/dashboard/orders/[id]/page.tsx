@@ -29,7 +29,6 @@ const id = params.id;
 
   const fetchOrder = async () => {
     const res = await api.get(`/api/orders/${id}`);
-    console.log(res.data.order, "Fetched order details")
     setOrder(res.data.order);
   };
 

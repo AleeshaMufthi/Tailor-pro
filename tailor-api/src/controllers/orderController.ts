@@ -161,7 +161,6 @@ export const getOrderById = async (req: Request, res: Response) => {
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
-   console.log("Fetched order by ID:", order)
     return res.json({ order });
   } catch (err: any) {
     return res.status(500).json({ message: err.message });

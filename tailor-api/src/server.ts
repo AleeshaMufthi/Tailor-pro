@@ -59,6 +59,8 @@ app.use("/api/staff", staffRoutes);
 app.use("/api/token", refreshRoute);
 app.use("/api/protected", protectedRoutes);
 
+
+
 const port = process.env.PORT || 4000
 app.listen(port, () => {
   console.log(`Server listening on http://localhost:${port}`)
