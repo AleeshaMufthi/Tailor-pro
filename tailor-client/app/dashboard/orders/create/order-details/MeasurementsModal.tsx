@@ -15,18 +15,6 @@ export default function MeasurementsModal({ close, save }: any) {
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
       <div className="bg-white p-6 rounded w-96 space-y-3">
         <h2 className="font-semibold text-lg">Add Measurements</h2>
-
-        {/* {Object.keys(form).map((key) => (
-          <input
-            key={key}
-            className="w-full p-2 border rounded"
-            placeholder={key}
-            value={form[key]}
-            onChange={(e) =>
-              setForm((prev: any) => ({ ...prev, [key]: e.target.value }))
-            }
-          />
-        ))} */}
         {(Object.keys(form) as (keyof typeof form)[]).map((key) => (
   <input
     key={key}

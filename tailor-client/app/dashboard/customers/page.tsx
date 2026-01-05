@@ -5,6 +5,7 @@ import api from "@/lib/axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AddCustomerModal from "@/components/customers/AddCustomerModal";
+import { User2 } from "lucide-react";
 
 export default function SelectCustomerPage() {
   const router = useRouter();
@@ -47,10 +48,12 @@ export default function SelectCustomerPage() {
 
         <button
           onClick={() => setOpenModal(true)}
-          className="px-4 py-2 bg-emerald-600 text-white rounded-lg shadow hover:bg-emerald-700"
+          className="px-6 py-4 bg-blue-400 text-black font-semibold rounded-full border border-blue-700 hover:bg-blue-500 transition"
         >
           + Add Customer
         </button>
+
+    
       </div>
 
       {/* Add Customer Modal */}
@@ -69,24 +72,24 @@ export default function SelectCustomerPage() {
         {customers.map((c) => (
         <div
   key={c._id}
-  className="p-4 rounded-lg bg-white shadow hover:shadow-md border"
+  className="p-4 rounded-xl bg-white shadow hover:shadow-md border-4 border-t-emerald-500"
 >
-  <h2 className="font-bold text-lg">{c.name}</h2>
-  <p className="text-sm text-gray-600">{c.phone}</p>
-  <p className="text-sm text-gray-600">{c.city}, {c.state}</p>
+  <h2 className="font-semibold text-xl mb-3">{c.name}</h2>
+  <p className="text-md text-gray-700">{c.phone}</p>
+  <p className="text-md text-gray-700">{c.city}, {c.state}</p>
 
   <div className="flex justify-between mt-4">
     
     <button
       onClick={() => gotoOutfitSelection(c._id)}
-      className="px-3 py-1 bg-emerald-600 text-white rounded text-sm"
+      className="px-4 py-2 bg-emerald-600 text-white rounded-md text-md font-semibold"
     >
       Select
     </button>
 
     <Link
       href={`/dashboard/customers/${c._id}`}
-      className="px-3 py-1 bg-gray-200 rounded text-sm"
+      className="px-4 py-2 bg-gray-200 rounded-md text-md font-semibold"
     >
       View Details
     </Link>

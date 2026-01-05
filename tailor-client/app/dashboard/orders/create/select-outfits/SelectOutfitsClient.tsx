@@ -2,8 +2,10 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useOrder } from "@/app/context/OrderContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Check } from "lucide-react";
+import { uploadToCloudinary } from "@/lib/cloudinary";
+import api from "@/lib/axios";
 
 interface Outfit {
   name: string;
@@ -28,6 +30,28 @@ export default function SelectOutfitsClient() {
   const { setOrderData } = useOrder();
   const [selected, setSelected] = useState<Outfit[]>([]);
   const [customName, setCustomName] = useState("");
+  const [customImage, setCustomImage] = useState<File | null>(null);
+const [uploading, setUploading] = useState(false);
+const [outfits, setOutfits] = useState<Outfit[]>([]);
+const [preview, setPreview] = useState<string | null>(null);
+
+
+useEffect(() => {
+  const fetchOutfits = async () => {
+    try {
+      const { data } = await api.get("/api/outfits/get", {
+        params: { userId: "CURRENT_USER_ID" },
+      });
+      setOutfits(data);
+    } catch (err) {
+      console.error("Fetch outfits failed", err);
+    }
+  };
+
+  fetchOutfits();
+}, []);
+
+
 
   const toggleOutfit = (outfit: Outfit) => {
     const idx = selected.findIndex((s) => s.name === outfit.name);
@@ -48,11 +72,45 @@ export default function SelectOutfitsClient() {
     setSelected((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const addCustomOutfit = () => {
-    if (!customName.trim()) return;
-    setSelected([...selected, { name: customName.trim(), quantity: 1 }]);
+const addCustomOutfit = async () => {
+  if (!customName.trim()) return;
+
+  try {
+    setUploading(true);
+
+    let imageUrl: string | undefined;
+
+    if (customImage) {
+      imageUrl = await uploadToCloudinary(customImage);
+    }
+
+    const { data: savedOutfit } = await api.post("/api/outfits/create", {
+      name: customName.trim(),
+      image: imageUrl,
+      userId: "CURRENT_USER_ID",
+    });
+
+    setOutfits((prev) => [...prev, savedOutfit]);
+
+    setSelected((prev) => [
+      ...prev,
+      {
+        name: savedOutfit.name,
+        quantity: 1,
+        image: savedOutfit.image,
+      },
+    ]);
+
     setCustomName("");
-  };
+    setCustomImage(null);
+  } catch (error) {
+    console.error("Create outfit failed:", error);
+  } finally {
+    setUploading(false);
+  }
+};
+
+
 
   const next = () => {
     setOrderData((prev: any) => ({
@@ -98,23 +156,98 @@ export default function SelectOutfitsClient() {
             </div>
           );
         })}
+
+        {outfits.map((o) => {
+          const isSelected = selected.some((s) => s.name === o.name);
+          return (
+            <div
+              key={o.name}
+              className={`relative h-48 w-48 border rounded-lg overflow-hidden cursor-pointer flex items-center justify-center transition-transform ${
+                isSelected
+                  ? "ring-4 ring-emerald-500 scale-105"
+                  : "hover:scale-105"
+              }`}
+              onClick={() => toggleOutfit(o)}
+            >
+              <img
+                src={o.image}
+                alt={o.name}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white font-semibold">
+                {o.name}
+              </div>
+              {isSelected && (
+                <Check
+                  size={24}
+                  className="absolute top-1 right-1 text-emerald-500 bg-white rounded-full p-0.5"
+                />
+              )}
+            </div>
+          );
+        })}
       </div>
 
-      <div className="mt-6 flex gap-2">
-        <input
-          type="text"
-          placeholder="Add custom outfit"
-          value={customName}
-          onChange={(e) => setCustomName(e.target.value)}
-          className="border p-2 rounded"
+{/* Hidden file input */}
+<input
+  id="custom-image"
+  type="file"
+  accept="image/*"
+  className="hidden"
+  onChange={(e) => {
+    const file = e.target.files?.[0] || null;
+    setCustomImage(file);
+    if (file) {
+      setPreview(URL.createObjectURL(file));
+    }
+  }}
+/>
+
+<div className="mt-10 max-w-xl rounded-2xl bg-white p-5 shadow-sm">
+  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+    Add Custom Outfit
+  </h3>
+
+  <div className="flex gap-4 items-start">
+    {/* Clickable upload box */}
+    <label
+      htmlFor="custom-image"
+      className="h-24 w-24 rounded-xl border-2 border-dashed border-emerald-400 flex items-center justify-center cursor-pointer hover:border-emerald-700 transition"
+    >
+      {preview ? (
+        <img
+          src={preview}
+          alt="Preview"
+          className="h-full w-full object-cover rounded-xl"
         />
-        <button
-          onClick={addCustomOutfit}
-          className="px-4 py-2 bg-emerald-600 font-semibold hover:bg-emerald-800 text-black rounded-full"
-        >
-          Add
-        </button>
-      </div>
+      ) : (
+        <span className="text-sm text-gray-500 text-center px-2">
+          Upload Image
+        </span>
+      )}
+    </label>
+
+    {/* Name + Button */}
+    <div className="flex-1 space-y-3">
+      <input
+        type="text"
+        placeholder="Outfit name (e.g. Sherwani)"
+        value={customName}
+        onChange={(e) => setCustomName(e.target.value)}
+        className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+      />
+
+      <button
+        onClick={addCustomOutfit}
+        disabled={uploading}
+        className="w-full rounded-full bg-emerald-600 py-2 font-semibold text-white hover:bg-emerald-700 transition disabled:opacity-60"
+      >
+        {uploading ? "Uploading..." : "Add Outfit"}
+      </button>
+    </div>
+  </div>
+</div>
+
 
       <div className="mt-6 space-y-3">
         {selected.map((item, i) => (

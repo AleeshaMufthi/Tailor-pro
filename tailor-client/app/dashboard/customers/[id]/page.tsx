@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import api from "@/lib/axios";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, MapPin, User, Phone, Mail, Clock } from "lucide-react";
+import { ChevronLeft, MapPin, User, Phone, Mail, Clock, CheckCircle2 } from "lucide-react";
 
 export default function CustomerDetailsPage() {
     
@@ -14,7 +14,6 @@ export default function CustomerDetailsPage() {
   const [customer, setCustomer] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState<any[]>([]);
-
 
   const fetchCustomer = async () => {
     try {
@@ -133,7 +132,7 @@ const isDeliveredOrder = (order: any) =>
         </div>
 
       
-       <Clock size={20} className="text-amber-600" />
+
       <h2 className="text-xl font-semibold mt-8 mb-3">Upcoming Orders</h2>
 
         {orders.filter(isUpcomingOrder).length === 0 && (

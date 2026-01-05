@@ -3,12 +3,41 @@
 import { useOrder } from "@/app/context/OrderContext";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import MeasurementsModal from "./MeasurementsModal";
-import StitchOptionsModal from "./StitchOptionsModal";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import api from "@/lib/axios";
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Trash2 } from "lucide-react";
+
+interface CustomMeasurement {
+  name: string;
+  size: string;
+  image?: File | null;
+}
+
+const DEFAULT_MEASUREMENT_CONFIG = {
+  shoulder: {
+    label: "Shoulder",
+    image: "/measurements/shoulder.jpg",
+    position: { top: "13%", left: "55%" },
+  },
+  chest: {
+    label: "Chest",
+    image: "/measurements/chest.jpg",
+    position: { top: "22%", left: "55%" },
+  },
+  waist: {
+    label: "Waist",
+    image: "/measurements/waist.jpg",
+    position: { top: "32%", left: "55%" },
+  },
+  hip: {
+    label: "Hip",
+    image: "/measurements/hip.jpg",
+    position: { top: "40%", left: "55%" },
+  },
+};
+
+
 
 export default function OrderDetailsPage() {
   const router = useRouter();
@@ -20,6 +49,22 @@ export default function OrderDetailsPage() {
 
   const [activeOutfitIndex, setActiveOutfitIndex] = useState(0);
   const activeOutfit = orderData.outfits?.[activeOutfitIndex];
+
+  const [form, setForm] = useState({ chest: "", waist: "", hip: "", shoulder: "" });
+
+  const [customMeasurements, setCustomMeasurements] = useState<CustomMeasurement[]>([]);
+  const [newMeasurement, setNewMeasurement] = useState<CustomMeasurement>({
+    name: "",
+    size: "",
+    image: null,
+  });
+
+  const addCustomMeasurement = () => {
+    if (!newMeasurement.name || !newMeasurement.size) return;
+    setCustomMeasurements((prev) => [...prev, newMeasurement]);
+    setNewMeasurement({ name: "", size: "", image: null });
+  };
+
 
   if (!activeOutfit) return null;
 
@@ -37,80 +82,118 @@ export default function OrderDetailsPage() {
     });
   };
 
+  const buildMeasurementPayload = () => {
+  const defaultMeasurements = Object.entries(form)
+    .filter(([_, value]) => value)
+    .map(([key, value]) => ({
+      name: key,
+      size: value,
+      type: "default",
+    }));
+
+  const custom = customMeasurements.map((m) => ({
+    name: m.name,
+    size: m.size,
+    type: "custom",
+  }));
+
+  return [...defaultMeasurements, ...custom];
+};
+
+
   const next = () => {
     router.push("/dashboard/orders/create/summary");
   };
 
-  /* ----------------------------------
-     File Upload (per outfit)
-  ---------------------------------- */
-  const handleFileUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: "referenceImages" | "audioUrl"
-  ) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+const handleFileUpload = async (
+  e: React.ChangeEvent<HTMLInputElement>,
+  field: "referenceImages" | "audioUrl"
+) => {
+  const files = e.target.files;
+  if (!files || files.length === 0) return;
 
-    setUploading(true);
+  setUploading(true);
 
-    try {
-      const uploadedUrls: string[] = [];
+  try {
+    const uploadedUrls: string[] = [];
 
-      for (const file of Array.from(files)) {
-        const url = await uploadToCloudinary(file);
-        uploadedUrls.push(url);
-      }
+    for (const file of Array.from(files)) {
+      const url = await uploadToCloudinary(file);
+      uploadedUrls.push(url);
+    }
 
-      setOrderData((prev: any) => {
-        const outfits = [...prev.outfits];
+    setOrderData((prev: any) => {
+      const outfits = [...prev.outfits];
 
-        if (field === "audioUrl") {
-          outfits[activeOutfitIndex].audioUrl = uploadedUrls[0];
-        } else {
-          outfits[activeOutfitIndex].referenceImages = [
+      if (field === "audioUrl") {
+        outfits[activeOutfitIndex].audioUrl = uploadedUrls[0];
+      } else {
+        outfits[activeOutfitIndex].referenceImages = Array.from(
+          new Set([
             ...(outfits[activeOutfitIndex].referenceImages || []),
             ...uploadedUrls,
-          ];
-        }
+          ])
+        );
+      }
 
-        return { ...prev, outfits };
-      });
-    } catch (err) {
-      console.error("Upload failed:", err);
-    } finally {
-      setUploading(false);
-    }
-  };
+      return { ...prev, outfits };
+    });
+  } catch (err) {
+    console.error("Upload failed:", err);
+  } finally {
+    setUploading(false);
+    e.target.value = ""; // 🔑 reset input
+  }
+};
 
-  /* ----------------------------------
-     Measurements
-  ---------------------------------- */
+// remove outfit reference image
+const removeReferenceImage = (imageUrl: string) => {
+  setOrderData((prev: any) => {
+    const outfits = [...prev.outfits];
+
+    outfits[activeOutfitIndex] = {
+      ...outfits[activeOutfitIndex],
+      referenceImages: outfits[activeOutfitIndex].referenceImages.filter(
+        (img: string) => img !== imageUrl
+      ),
+    };
+
+    return { ...prev, outfits };
+    
+  });
+};
+
+
   const createMeasurements = async (data: any) => {
     const res = await api.post("/api/measurements/create", data);
     return res.data;
   };
 
-  const saveMeasurements = async (values: any) => {
-    try {
-      const payload = {
-        type: activeOutfit.type || "stitching",
-        values,
-      };
-
-      const measurement = await createMeasurements(payload);
-      updateOutfit("measurements", measurement._id);
-      setShowMeasurement(false);
-    } catch (err) {
-      console.error("Failed to save measurements", err);
-    }
-  };
-
-  const updateOrder = (key: string, value: any) => {
-  setOrderData((prev: any) => ({
-    ...prev,
-    [key]: value,
-  }));
+  const removeCustomMeasurement = (index: number) => {
+  setCustomMeasurements((prev) => prev.filter((_, i) => i !== index));
 };
+
+//   const saveMeasurements = async (values: any) => {
+//     try {
+//       const payload = {
+//         type: activeOutfit.type || "stitching",
+//         values,
+//       };
+
+//       const measurement = await createMeasurements(payload);
+//       updateOutfit("measurements", measurement._id);
+//       setShowMeasurement(false);
+//     } catch (err) {
+//       console.error("Failed to save measurements", err);
+//     }
+//   };
+
+//   const updateOrder = (key: string, value: any) => {
+//   setOrderData((prev: any) => ({
+//     ...prev,
+//     [key]: value,
+//   }));
+// };
 
 
 console.log(orderData, "ordreData in details")
@@ -136,9 +219,9 @@ console.log(orderData, "ordreData in details")
           <button
             key={i}
             onClick={() => setActiveOutfitIndex(i)}
-            className={`px-6 py-2 rounded-full border font-semibold ${
+            className={`px-6 py-2 rounded-full border font-semibold mb-4 ${
               i === activeOutfitIndex
-                ? "bg-emerald-600 text-black"
+                ? "bg-emerald-600 text-white"
                 : "bg-white"
             }`}
           >
@@ -148,126 +231,321 @@ console.log(orderData, "ordreData in details")
         ))}
       </div>
 
-      {/* Type */}
-      <select
-        value={activeOutfit.type || ""}
-        onChange={(e) => updateOutfit("type", e.target.value)}
-        className="border p-2 w-full"
-      >
-        <option value="">Select Type</option>
-        <option value="stitching">Stitching</option>
-        <option value="alteration">Alteration</option>
-      </select>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-      {/* Instructions */}
-      <textarea
-        className="border p-2 w-full"
-        rows={4}
-        placeholder="Special Instructions"
-        value={activeOutfit.specialInstructions || ""}
-        onChange={(e) =>
-          updateOutfit("specialInstructions", e.target.value)
-        }
+  <div>
+    <label className="text-md font-semibold text-gray-600">Order Type</label>
+    <select
+      value={activeOutfit.type || ""}
+      onChange={(e) => updateOutfit("type", e.target.value)}
+      className="border p-2 mt-3 rounded-xl w-full hover:border-emerald-500 transition"
+    >
+      <option value="">Select Type</option>
+      <option value="stitching">Stitching</option>
+      <option value="alteration">Alteration</option>
+    </select>
+  </div>
+
+  {/* Inspiration */}
+  <div>
+    <label className="text-md text-gray-600 font-semibold">Inspiration URL</label>
+    <input
+      className="border p-2 hover:border-emerald-500 rounded-xl w-full mt-3"
+      value={activeOutfit.inspirationLink || ""}
+      onChange={(e) => updateOutfit("inspirationLink", e.target.value)}
+    />
+  </div>
+
+  {/* Instructions (full row) */}
+  <div className="md:col-span-2">
+    <label className="text-md font-semibold text-gray-600 mb-3">Special Instructions</label>
+    <textarea
+      rows={3}
+      className="border p-2 rounded-xl hover:border-emerald-500 w-full mt-3"
+      value={activeOutfit.specialInstructions || ""}
+      onChange={(e) =>
+        updateOutfit("specialInstructions", e.target.value)
+      }
+    />
+  </div>
+</div>
+
+<h3 className="font-semibold text-md text-gray-600 mt-4">Reference Images</h3>
+
+<label className="inline-block cursor-pointer">
+  <div className="px-4 py-2 border border-emerald-600 rounded-xl bg-gray-50 hover:bg-gray-100 text-sm font-medium">
+    + Add Reference Image
+  </div>
+
+  <input
+    type="file"
+    accept="image/*"
+    multiple
+    className="hidden"
+    onChange={(e) => handleFileUpload(e, "referenceImages")}
+  />
+</label>
+
+<div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+  {activeOutfit.referenceImages?.map((img: string, index: number) => (
+    <div
+      key={img}
+      className="relative w-32 h-[200px] overflow-hidden rounded-lg"
+    >
+      {/* Image */}
+      <img
+        src={img}
+        alt="reference"
+        className="w-full h-full object-cover"
       />
 
-      {/* Inspiration Link */}
-      <input
-        className="border p-2 w-full"
-        placeholder="Inspiration URL"
-        value={activeOutfit.inspirationLink || ""}
-        onChange={(e) =>
-          updateOutfit("inspirationLink", e.target.value)
-        }
-      />
-      <p>Reference Images</p>
-      {/* Reference Images */}
-      <input
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={(e) => handleFileUpload(e, "referenceImages")}
-      />
-
-      {/* Audio */}
-      {/* <p>Audio Note</p>
-      <input
-        type="file"
-        accept="audio/*"
-        onChange={(e) => handleFileUpload(e, "audioUrl")}
-      /> */}
-
-      {/* Prices */}
-      <p>Stitching price</p>
-      <input
-        className="border p-2 w-full"
-        type="number"
-        placeholder="Stitching Price"
-        value={ activeOutfit.stitchingPrice || "" }
-        onChange={(e) =>
-          updateOutfit("stitchingPrice", Number(e.target.value))
-        }
-      />
-
-      <p>Additional price</p>
-      <input
-        className="border p-2 w-full"
-        type="number"
-        placeholder="Additional Price"
-        value={activeOutfit.additionalPrice || ""}
-        onChange={(e) =>
-          updateOutfit("additionalPrice", Number(e.target.value))
-        }
-      />
-
-<p>Delivery date</p>
-<input
-  className="border p-2 w-full"
-  type="date"
-  value={activeOutfit.deliveryDate ?? ""}
-  onChange={(e) => updateOutfit("deliveryDate", e.target.value)}
-/>
-
-<p>Trial date</p>
-<input
-  className="border p-2 w-full"
-  type="date"
-  value={activeOutfit.trialDate ?? ""}
-  onChange={(e) => updateOutfit("trialDate", e.target.value)}
-/>
-
-
-      {/* Modals */}
+      {/* Remove Button */}
       <button
-        onClick={() => setShowMeasurement(true)}
-        className="px-4 py-2 bg-gray-200 rounded-full border border-emerald-500 hover:bg-gray-400 transition"
+        type="button"
+        onClick={() => removeReferenceImage(img)}
+        className="absolute top-1 right-1 bg-black/70 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm group-hover:opacity-100 transition-transform hover:scale-105"
+        aria-label="Remove image"
       >
-        Add Measurements
+        ✕
       </button>
+    </div>
+  ))}
+</div>
 
-      {/* <button
-        onClick={() => setShowStitchOptions(true)}
-        className="px-4 py-2 bg-gray-200 rounded"
+
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+  <div>
+    <label className="text-md font-semibold text-gray-600">Stitching Price</label>
+    <input
+      type="number"
+      className="border p-2 rounded-xl hover:border-emerald-500 w-full mt-3"
+      value={activeOutfit.stitchingPrice || ""}
+      onChange={(e) =>
+        updateOutfit("stitchingPrice", Number(e.target.value))
+      }
+    />
+  </div>
+
+  <div>
+    <label className="text-md font-semibold text-gray-600">Additional Price</label>
+    <input
+      type="number"
+      className="border p-2 rounded-xl hover:border-emerald-500 w-full mt-3"
+      value={activeOutfit.additionalPrice || ""}
+      onChange={(e) =>
+        updateOutfit("additionalPrice", Number(e.target.value))
+      }
+    />
+  </div>
+
+  <div>
+    <label className="text-md font-semibold text-gray-600">Trial Date</label>
+    <input
+      type="date"
+      className="border p-2 rounded-xl hover:border-emerald-500 w-full mt-3"
+      value={activeOutfit.trialDate ?? ""}
+      onChange={(e) => updateOutfit("trialDate", e.target.value)}
+    />
+  </div>
+
+  <div>
+    <label className="text-md font-semibold text-gray-600">Delivery Date</label>
+    <input
+      type="date"
+      className="border p-2 rounded-xl hover:border-emerald-500 w-full mt-3"
+      value={activeOutfit.deliveryDate ?? ""}
+      onChange={(e) => updateOutfit("deliveryDate", e.target.value)}
+    />
+  </div>
+
+</div>
+
+
+<div className="p-6 rounded-lg space-y-6">
+
+  <h2 className="font-semibold text-xl">Measurements</h2>
+
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    {(Object.keys(form) as (keyof typeof form)[]).map((key) => {
+      const config = DEFAULT_MEASUREMENT_CONFIG[key];
+
+      return (
+        <div
+          key={key}
+          className="flex items-center gap-4 border border-gray-300 p-3 rounded-xl"
+        >
+          <img
+            src={config.image}
+            alt={config.label}
+            className="w-24 h-24 rounded-xl object-cover"
+          />
+
+          <div className="flex-1">
+            <label className="block text-sm font-medium mb-1">
+              {config.label}
+            </label>
+            <input
+              type="number"
+              placeholder="cm"
+              value={form[key]}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, [key]: e.target.value }))
+              }
+              className="w-full border p-2 rounded-xl"
+            />
+          </div>
+        </div>
+      );
+    })}
+  </div>
+
+  <h2 className="font-semibold text-xl">Add Custom Measurement</h2>
+
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+    <input
+      placeholder="Measurement name"
+      value={newMeasurement.name}
+      onChange={(e) =>
+        setNewMeasurement({ ...newMeasurement, name: e.target.value })
+      }
+      className="border p-2 rounded-xl"
+    />
+
+    <input
+      placeholder="Size (cm)"
+      value={newMeasurement.size}
+      onChange={(e) =>
+        setNewMeasurement({ ...newMeasurement, size: e.target.value })
+      }
+      className="border p-2 rounded-xl"
+    />
+
+    <label className="border border-emerald-500 rounded-xl font-medium text-md p-2 flex items-center justify-center cursor-pointer bg-gray-50 hover:bg-gray-100">
+      <input
+        type="file"
+        className="hidden"
+        onChange={(e) =>
+          setNewMeasurement({
+            ...newMeasurement,
+            image: e.target.files?.[0] || null,
+          })
+        }
+      />
+      + Upload Image
+    </label>
+  </div>
+
+  {newMeasurement.image && (
+    <div className="flex items-center gap-3 border p-3 rounded bg-gray-50 mt-3">
+      <img
+        src={URL.createObjectURL(newMeasurement.image)}
+        className="w-24 h-24 rounded object-cover"
+        alt="preview"
+      />
+      <div>
+        <p className="font-medium">
+          {newMeasurement.name || "Custom measurement"}
+        </p>
+        <p className="text-sm text-gray-600">
+          {newMeasurement.size} cm
+        </p>
+      </div>
+    </div>
+  )}
+
+  <button
+    onClick={addCustomMeasurement}
+    className="bg-emerald-600 text-white px-4 py-2 rounded-xl font-semibold mt-3"
+  >
+    Add Measurement
+  </button>
+
+  {customMeasurements.length > 0 && (
+    <div className="space-y-2">
+      {customMeasurements.map((m, i) => (
+        <div
+          key={i}
+          className="flex items-center gap-3 p-2 rounded-xl"
+        >
+          {m.image && (
+            <img
+              src={URL.createObjectURL(m.image)}
+              className="w-24 h-24 rounded-xl object-cover"
+              alt={m.name}
+            />
+          )}
+          <p className="font-medium">
+            {m.name}: {m.size} cm
+          </p>
+
+          <button
+          type="button"
+          onClick={() => removeCustomMeasurement(i)}
+          className="text-red-500 hover:text-red-700 font-semibold"
+        >
+          <Trash2 className="w-5 h-5 text-red-500 hover:text-red-700"  />
+          
+        </button>
+        
+        </div>
+
+        
+      ))}
+         
+    </div>
+  )}
+
+
+
+  <h2 className="font-semibold text-xl text-center">Preview on Demo Image</h2>
+
+  <div className="relative w-[380px] h-[580px] border rounded mx-auto">
+    <img
+      src="/measurements/measure.jpg"
+      alt="Demo Body"
+      className="w-full h-full object-cover"
+    />
+
+    {(Object.keys(form) as (keyof typeof form)[]).map((key) => {
+      const config = DEFAULT_MEASUREMENT_CONFIG[key];
+      if (!form[key]) return null;
+
+      return (
+        <div
+          key={key}
+          className="absolute flex items-center gap-2 bg-white/90 px-2 py-1 rounded shadow text-xs"
+          style={{
+            top: config.position.top,
+            left: config.position.left,
+          }}
+        >
+          <span className="font-medium text-lg">
+            {config.label}: {form[key]} cm
+          </span>
+        </div>
+      );
+    })}
+
+    {customMeasurements.map((m, i) => (
+      <div
+        key={i}
+        className="absolute flex items-center gap-2 bg-white/90 px-2 py-1 rounded shadow text-xs"
+        style={{ top: `${65 + i * 6}%`, left: "55%" }}
       >
-        Stitch Options
-      </button> */}
-
-      {showMeasurement && (
-        <MeasurementsModal
-          close={() => setShowMeasurement(false)}
-          save={saveMeasurements}
-        />
-      )}
-
-      {showStitchOptions && (
-        <StitchOptionsModal
-          close={() => setShowStitchOptions(false)}
-          save={(o: any) => updateOutfit("stitchOptions", o)}
-        />
-      )}
+       
+        <span className="text-lg font-semibold">
+          {m.name}: {m.size} cm
+        </span>
+      </div>
+    ))}
+  </div>
+</div>
 
       <button
         onClick={next}
-        className="px-4 py-2 bg-emerald-600 text-white rounded-full"
+        className="px-4 py-2 bg-emerald-600 text-md font-medium text-white rounded-full"
       >
         Continue to Summary
       </button>

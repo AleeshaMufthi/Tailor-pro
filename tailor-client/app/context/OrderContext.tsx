@@ -12,8 +12,8 @@ export interface OutfitItem {
   stitchingPrice?: number;
   additionalPrice?: number;
 
-  trialDate?: string;       // 👈 ADD
-  deliveryDate?: string;    // 👈 ADD
+  trialDate?: string;      
+  deliveryDate?: string;   
 
   inspirationLink?: string;
   audioUrl?: string;
