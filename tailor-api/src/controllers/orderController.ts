@@ -6,14 +6,13 @@ import { generateOrderNumber } from "../utils/generateOrderNumber";
 
 export const createOrder = async (req: Request, res: Response) => {
   try {
-  console.log(req.body, "Creating new order with data");
+
     const {
       customerId,
-      outfits,                 // array of outfitObjects (each converted to OrderItem)
-      // trialDate,
-      // deliveryDate,
+      outfits,   
       advanceGiven = 0,
       notes,
+       
     } = req.body;
 
     if (!customerId)
@@ -22,20 +21,47 @@ export const createOrder = async (req: Request, res: Response) => {
     if (!outfits || outfits.length === 0)
       return res.status(400).json({ message: "At least one outfit is required" });
 
-    // -------------------------------------------
-    // 1️⃣ CREATE ORDER ITEMS
-    // -------------------------------------------
     const createdItemIds: any[] = [];
     let totalAmount = 0;
 
-    for (const item of outfits) {
-      // item = {name, type, specialInstructions, referenceImages[], audioUrl, inspirationLink ...}
 
-      // Save measurements if present
-      // let measurementDoc = null;
-      // if (item.measurements && Object.keys(item.measurements).length > 0) {
-      //   measurementDoc = await Measurement.create(item.measurements);
-      // }
+const LIMIT = 15;
+const forceDeliveryDate = req.body.forceDeliveryDate === true;
+
+const deliveryDates: string[] = outfits
+  .map((o: any) => o.deliveryDate)
+  .filter(Boolean)
+  .map((d: string | Date) =>
+    typeof d === "string" ? d : d.toISOString()
+  );
+
+const uniqueDeliveryDates = [...new Set(deliveryDates)];
+
+
+for (const date of uniqueDeliveryDates) {
+  const start = new Date(date);
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date(date);
+  end.setHours(23, 59, 59, 999);
+
+  const ordersCount = await OrderItem.countDocuments({
+    deliveryDate: { $gte: start, $lte: end },
+  });
+
+  if (ordersCount >= LIMIT && !forceDeliveryDate) {
+    return res.status(409).json({
+      message: "Delivery date limit exceeded",
+      deliveryDate: date,
+      totalOrders: ordersCount,
+      limit: LIMIT,
+    });
+  }
+}
+
+
+
+    for (const item of outfits) {
 
       // Create OrderItem
       const orderItem = await OrderItem.create({
@@ -62,10 +88,6 @@ export const createOrder = async (req: Request, res: Response) => {
         (orderItem.stitchingPrice || 0) * (orderItem.quantity || 1) +
         (orderItem.additionalPrice || 0);
     }
-
-    // -------------------------------------------
-    // 2️⃣ CREATE ORDER RECORD
-    // -------------------------------------------
     const orderNumber = await generateOrderNumber();
 
     const balanceDue = totalAmount - (advanceGiven || 0);
@@ -74,14 +96,13 @@ export const createOrder = async (req: Request, res: Response) => {
       orderNumber,
       customer: customerId,
       items: createdItemIds,
-      // trialDate,
-      // deliveryDate,
       totalAmount,
       advanceGiven,
       balanceDue,
       notes,
       status: req.body.status || "active",
     });
+    
 
     return res.status(201).json({
       message: "Order created",
@@ -322,6 +343,53 @@ export const updateOutfitStatus = async (req: Request, res: Response) => {
     return res.status(500).json({ message: err.message });
   }
 };
+
+export const getOrdersCountByDate = async (req: Request, res: Response) => {
+  try {
+    console.log("Fetching order count by date...", req.query);
+
+    const { date } = req.query;
+
+    if (!date || typeof date !== "string") {
+      return res.status(400).json({ message: "Valid date is required" });
+    }
+
+    const parsedDate = new Date(`${date}T00:00:00`);
+    if (isNaN(parsedDate.getTime())) {
+      return res.status(400).json({ message: "Invalid date format" });
+    }
+
+    const start = new Date(parsedDate);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(parsedDate);
+    end.setHours(23, 59, 59, 999);
+
+    const count = await OrderItem.countDocuments({
+      deliveryDate: {
+        $ne: null,    
+        $gte: start,
+        $lte: end,
+      },
+    });
+
+    const LIMIT = 15;
+
+    return res.json({
+      date,
+      totalOrders: count,
+      limit: LIMIT,
+      exceeded: count >= LIMIT,
+    });
+
+  } catch (error: any) {
+    console.error("❌ count-by-date ERROR:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+
+
 
 
 

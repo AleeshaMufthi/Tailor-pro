@@ -18,7 +18,7 @@ const DEFAULT_MEASUREMENT_CONFIG = {
   shoulder: {
     label: "Shoulder",
     image: "/measurements/shoulder.jpg",
-    position: { top: "13%", left: "55%" },
+    position: { top: "15%", left: "55%" },
   },
   chest: {
     label: "Chest",
@@ -35,8 +35,47 @@ const DEFAULT_MEASUREMENT_CONFIG = {
     image: "/measurements/hip.jpg",
     position: { top: "40%", left: "55%" },
   },
+  neck:{
+    label: "Neck",
+    image: "/measurements/neck.jpg",
+    position: { top: "10%", left: "55%" },
+  },
+  sleeveLength:{
+    label: "Sleeve Length",
+    image: "/measurements/sleeve_length.jpg",
+    position: { top: "28%", left: "30%" },
+  },
+  wrist:{
+    label: "Wrist",
+    image: "/measurements/wrist_circumference.jpg",
+    position: { top: "45%", left: "25%" },
+  },
+  armhole:{
+    label: "Armhole",
+    image: "/measurements/arm_hole.jpg",
+    position: { top: "15%", left: "30%" },
+  },
+  hipCircumference:{
+    label: "Hip Circumference",
+    image: "/measurements/hip_circumference.jpg",
+    position: { top: "45%", left: "55%" },
+  },
+  kneeCircumference:{
+    label: "Knee Circumference",
+    image: "/measurements/knee_circumference.jpg",
+    position: { top: "60%", left: "55%" },
+  },
+  bottomlength:{
+    label: "Bottom Length",
+    image: "/measurements/Bottomlength.jpg",
+    position: { top: "75%", left: "55%" },
+  },
+  ankle:{
+    label: "Ankle",
+    image: "/measurements/ankle.jpg",
+    position: { top: "87%", left: "60%" },
+  }
 };
-
 
 
 export default function OrderDetailsPage() {
@@ -50,7 +89,20 @@ export default function OrderDetailsPage() {
   const [activeOutfitIndex, setActiveOutfitIndex] = useState(0);
   const activeOutfit = orderData.outfits?.[activeOutfitIndex];
 
-  const [form, setForm] = useState({ chest: "", waist: "", hip: "", shoulder: "" });
+  const [form, setForm] = useState({ 
+    chest: "", 
+    waist: "", 
+    hip: "", 
+    shoulder: "",
+    neck: "",
+    sleeveLength: "",
+    wrist: "",
+    armhole: "",
+    hipCircumference: "",
+    kneeCircumference: "",
+    bottomlength: "",
+    ankle:"",
+  });
 
   const [customMeasurements, setCustomMeasurements] = useState<CustomMeasurement[]>([]);
   const [newMeasurement, setNewMeasurement] = useState<CustomMeasurement>({
@@ -59,18 +111,69 @@ export default function OrderDetailsPage() {
     image: null,
   });
 
-  const addCustomMeasurement = () => {
-    if (!newMeasurement.name || !newMeasurement.size) return;
-    setCustomMeasurements((prev) => [...prev, newMeasurement]);
-    setNewMeasurement({ name: "", size: "", image: null });
+  const [dailyOrderCount, setDailyOrderCount] = useState<number | null>(null);
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  const ORDER_LIMIT = 15;
+
+  const handleDeliveryDateChange = async (date: string) => {
+  console.log("Selected delivery date:", date);
+  updateOutfit("deliveryDate", date);
+
+    setOrderData((prev: any) => ({
+    ...prev,
+    forceDeliveryDate: false, 
+  }));
+
+  try {
+
+    const res = await api.get(
+      `/api/orders/count-by-date?date=${date}`
+    );
+
+    console.log("Order count response:", res.data);
+
+    setDailyOrderCount(res.data.totalOrders);
+
+    if (res.data.exceeded) {
+    setShowLimitModal(true);
+}
+  } catch (err) {
+    console.error("Failed to fetch order count", err);
+  }
+};
+
+
+const acceptOverLimit = () => {
+  setOrderData((prev: any) => ({
+    ...prev,
+    forceDeliveryDate: true,
+  }));
+  setShowLimitModal(false);
+};
+
+  const addCustomMeasurement = async () => {
+  if (!newMeasurement.name || !newMeasurement.size) return;
+
+  let imageUrl: string | undefined;
+
+  if (newMeasurement.image) {
+    imageUrl = await uploadToCloudinary(newMeasurement.image);
+  }
+
+  const measurement = {
+    name: newMeasurement.name,
+    size: newMeasurement.size,
+    imageUrl,
   };
+
+  setCustomMeasurements((prev) => [...prev, measurement]);
+  setNewMeasurement({ name: "", size: "", image: null });
+};
+
 
 
   if (!activeOutfit) return null;
 
-  /* ----------------------------------
-     Outfit scoped updater
-  ---------------------------------- */
   const updateOutfit = (key: string, value: any) => {
     setOrderData((prev: any) => {
       const outfits = [...prev.outfits];
@@ -102,6 +205,7 @@ export default function OrderDetailsPage() {
 
 
   const next = () => {
+    saveMeasurementsToOutfit();
     router.push("/dashboard/orders/create/summary");
   };
 
@@ -173,27 +277,27 @@ const removeReferenceImage = (imageUrl: string) => {
   setCustomMeasurements((prev) => prev.filter((_, i) => i !== index));
 };
 
-//   const saveMeasurements = async (values: any) => {
-//     try {
-//       const payload = {
-//         type: activeOutfit.type || "stitching",
-//         values,
-//       };
+const saveMeasurementsToOutfit = () => {
+  const payload = {
+    defaults: {
+      chest: form.chest || undefined,
+      waist: form.waist || undefined,
+      hip: form.hip || undefined,
+      shoulder: form.shoulder || undefined,
+    },
+    custom: customMeasurements,
+  };
 
-//       const measurement = await createMeasurements(payload);
-//       updateOutfit("measurements", measurement._id);
-//       setShowMeasurement(false);
-//     } catch (err) {
-//       console.error("Failed to save measurements", err);
-//     }
-//   };
+  setOrderData((prev: any) => {
+    const outfits = [...prev.outfits];
+    outfits[activeOutfitIndex] = {
+      ...outfits[activeOutfitIndex],
+      measurements: payload,
+    };
+    return { ...prev, outfits };
+  });
+};
 
-//   const updateOrder = (key: string, value: any) => {
-//   setOrderData((prev: any) => ({
-//     ...prev,
-//     [key]: value,
-//   }));
-// };
 
 
 console.log(orderData, "ordreData in details")
@@ -356,11 +460,59 @@ console.log(orderData, "ordreData in details")
       type="date"
       className="border p-2 rounded-xl hover:border-emerald-500 w-full mt-3"
       value={activeOutfit.deliveryDate ?? ""}
-      onChange={(e) => updateOutfit("deliveryDate", e.target.value)}
+      onChange={(e) => handleDeliveryDateChange(e.target.value)}
     />
+    {dailyOrderCount !== null && (
+  <p
+    className={`mt-2 ${
+      dailyOrderCount >= ORDER_LIMIT
+        ? "text-red-600/30 text-red-400 px-2 py-2 rounded-lg text-md font-semibold"
+        : "bg-yellow-500/30 text-yellow-700 px-2 py-2 rounded-lg text-md font-semibold"
+    }`}
+  >
+    Total {dailyOrderCount} orders placed on this day. Maximum {ORDER_LIMIT} orders allowed.
+  
+  </p>
+)}
+
   </div>
 
 </div>
+
+{showLimitModal && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-xl p-6 w-[400px] space-y-4">
+      <h3 className="text-xl font-bold text-red-600 items-center justify-center flex">
+        Delivery Limit Reached
+      </h3>
+
+      <p className="text-md font-semibold text-gray-700">
+        There are already {dailyOrderCount} orders scheduled for this date.
+        You can either continue or choose another date.
+      </p>
+
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => {
+            setShowLimitModal(false);
+            updateOutfit("deliveryDate", "");
+          }}
+          className="px-3 py-2 border border-emerald-600 text-md font-semibold rounded-xl"
+        >
+          Choose Another Date
+        </button>
+
+        <button
+          onClick={acceptOverLimit}
+          className="px-3 py-2 bg-emerald-600 text-white text-md font-semibold rounded-xl"
+        >
+          Continue Anyway
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
 
 <div className="p-6 rounded-lg space-y-6">
@@ -488,7 +640,7 @@ console.log(orderData, "ordreData in details")
           <Trash2 className="w-5 h-5 text-red-500 hover:text-red-700"  />
           
         </button>
-        
+
         </div>
 
         
@@ -521,7 +673,7 @@ console.log(orderData, "ordreData in details")
             left: config.position.left,
           }}
         >
-          <span className="font-medium text-lg">
+          <span className="font-medium text-md">
             {config.label}: {form[key]} cm
           </span>
         </div>
@@ -535,7 +687,7 @@ console.log(orderData, "ordreData in details")
         style={{ top: `${65 + i * 6}%`, left: "55%" }}
       >
        
-        <span className="text-lg font-semibold">
+        <span className="text-md font-semibold">
           {m.name}: {m.size} cm
         </span>
       </div>

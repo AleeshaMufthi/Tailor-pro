@@ -20,8 +20,31 @@ export interface OutfitItem {
   referenceImages?: string[];
   specialInstructions?: string;
 
-  measurements?: any;
+    measurements?: {
+    defaults: {
+      chest?: string;
+      waist?: string;
+      hip?: string;
+      shoulder?: string;
+      neck: string,
+    sleeveLength: string,
+    wrist: string,
+    armhole: string,
+    hipCircumference: string,
+    kneeCircumference: string,
+    bottomlength: string,
+    ankle: string,
+    };
+    custom: CustomMeasurement[];
+  };
+
   stitchOptions?: any;
+}
+
+export interface CustomMeasurement {
+  name: string;
+  size: string;
+  imageUrl?: string;
 }
 
 
@@ -41,6 +64,7 @@ export interface OrderData {
   trialDate: string;
   measurements: Record<string, any>;
   stitchOptions: Record<string, any>;
+  forceDeliveryDate?: boolean; 
 }
 
 const defaultValue: OrderData = {
@@ -59,6 +83,7 @@ const defaultValue: OrderData = {
   trialDate: "",
   measurements: {},
   stitchOptions: {},
+  forceDeliveryDate: false,
 };
 
 const OrderContext = createContext<{
@@ -67,6 +92,7 @@ const OrderContext = createContext<{
 } | null>(null);
 
 export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
+  
   const [orderData, setOrderData] = useState<OrderData>(defaultValue);
 
   return <OrderContext.Provider value={{ orderData, setOrderData }}>{children}</OrderContext.Provider>;
@@ -75,5 +101,5 @@ export const OrderProvider = ({ children }: { children: React.ReactNode }) => {
 export const useOrder = () => {
   const ctx = useContext(OrderContext);
   if (!ctx) throw new Error("useOrder must be used within OrderProvider");
-  return ctx; // <-- previously missing return
+  return ctx;
 };

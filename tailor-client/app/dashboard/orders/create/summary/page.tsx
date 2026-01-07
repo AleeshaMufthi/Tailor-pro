@@ -3,6 +3,9 @@
 import { useOrder } from "@/app/context/OrderContext";
 import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
+
 
 export default function OrderSummaryPage() {
   const { orderData } = useOrder();
@@ -26,9 +29,11 @@ export default function OrderSummaryPage() {
       stitchOptions: item.stitchOptions || {},
       stitchingPrice: Number(item.stitchingPrice || 0),
       additionalPrice: Number(item.additionalPrice || 0),
-      trialDate: item.trialDate || null,        // 👈 ADD
+      trialDate: item.trialDate || null,   
       deliveryDate: item.deliveryDate || null,
     }));
+
+    console.log("Order Data in Summary Page:", orderData);
 
   const validate = () => {
     if (!orderData.customerId) return "Customer missing";
@@ -38,7 +43,6 @@ export default function OrderSummaryPage() {
       if (!o.type) return `Type missing for ${o.name}`;
       if (!o.stitchingPrice) return `Price missing for ${o.name}`;
     }
-
     return null;
   };
 
@@ -53,6 +57,7 @@ export default function OrderSummaryPage() {
         notes: orderData.notes || "",
         outfits: buildOutfitsPayload(),
         status,
+        forceDeliveryDate: orderData.forceDeliveryDate || false,
       };
 
       console.log("Submitting order payload:", payload)
@@ -67,7 +72,14 @@ export default function OrderSummaryPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-xl font-semibold">Order Summary</h1>
+            <Link
+        href="/dashboard/orders/create/order-details"
+        className="text-gray-600 flex items-center gap-1"
+      >
+      <ChevronLeft size={20} />
+      Back to Order Details
+      </Link>
+      <h1 className="text-2xl font-semibold">Order Summary</h1>
 
       {orderData.outfits.map((o: any, i: number) => (
         <div key={i} className="border p-4 rounded bg-white">
@@ -79,9 +91,7 @@ export default function OrderSummaryPage() {
           <p>Delivery Date: {o.deliveryDate || "-"}</p>
         </div>
       ))}
-
-
-
+    
       <div className="flex gap-4">
         <button
           onClick={() => submit("active")}

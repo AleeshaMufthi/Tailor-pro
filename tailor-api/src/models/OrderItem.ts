@@ -1,5 +1,35 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+const CustomMeasurementSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    size: { type: String, required: true },
+    imageUrl: String,
+  },
+  { _id: false }
+);
+
+const MeasurementsSchema = new Schema(
+  {
+    defaults: {
+      chest: String,
+      waist: String,
+      hip: String,
+      shoulder: String,
+      neck: String,
+      sleeveLength: String,
+      wrist: String,
+      armhole: String,
+      hipCircumference: String,
+      kneeCircumference: String,
+      bottomlength: String,
+      ankle: String,
+    },
+    custom: [CustomMeasurementSchema],
+  },
+  { _id: false }
+);
+
 export interface IOrderItem extends Document {
 
     name?: string;
@@ -18,7 +48,27 @@ export interface IOrderItem extends Document {
 
     referenceImages?: string;
 
-    measurements?: mongoose.Schema.Types.ObjectId;
+    measurements?: {
+    defaults?: {
+      chest?: string;
+      waist?: string;
+      hip?: string;
+      shoulder?: string;
+      neck: string;
+      sleeveLength: string;
+      wrist: string;
+      armhole: string;
+      hipCircumference: string;
+      kneeCircumference: string;
+      bottomlength: string;
+      ankle: string;
+    };
+    custom?: {
+      name: string;
+      size: string;
+      imageUrl?: string;
+    }[];
+  };
 
     stitchOptions?: Map<string, string>;
 
@@ -54,7 +104,7 @@ const orderitemSchema = new Schema<IOrderItem>(
 
   referenceImages: [{ url: String, publicId: String }],
 
-  measurements: { type: mongoose.Schema.Types.ObjectId, ref: "Measurement" },
+  measurements: MeasurementsSchema,
 
   stitchOptions: { type: Map, of: String }, 
 
