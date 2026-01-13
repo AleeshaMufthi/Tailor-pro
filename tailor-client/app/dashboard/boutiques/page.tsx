@@ -7,6 +7,20 @@ import { useAuth } from "@/app/context/AuthContext";
 export default function BoutiqueSettingsPage() {
   const { user, setUser } = useAuth();
   const [boutiques, setBoutiques] = useState<any[]>([]);
+  const [dailyOrderLimit, setDailyOrderLimit] = useState<number>(15);
+
+  const saveLimit = async () => {
+  try {
+    await api.put("/api/boutique/update-daily-limit", {
+      dailyOrderLimit,
+    });
+
+    alert("Daily order limit updated");
+  } catch (err) {
+    alert("Failed to update limit");
+  }
+};
+
 
   useEffect(() => {
     api.get("/api/boutique/my-boutiques").then(res => {
@@ -14,12 +28,12 @@ export default function BoutiqueSettingsPage() {
       console.log(res.data, 'boutiques fetched');
     });
   }, []);
+  
 
   const switchBoutique = async (id: string) => {
     const res = await api.post("/api/boutique/switch", {
       boutiqueId: id,
     });
-    window.location.reload();
     setUser(res.data.user);
   };
 
@@ -30,6 +44,26 @@ export default function BoutiqueSettingsPage() {
             <p className="text-gray-600 font-semibold">This page lets you manage multiple boutiques under your account.</p>
             </div>
 
+<label className="block text-gray-700 font-semibold mb-2">
+  Maximum orders per day
+</label>
+
+<input
+  type="number"
+  min={1}
+  className="border rounded-lg p-2 w-full mb-4"
+  value={dailyOrderLimit}
+  onChange={(e) => setDailyOrderLimit(Number(e.target.value))}
+/>
+
+<button
+  onClick={saveLimit}
+  className="bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold"
+>
+  Save
+</button>
+
+      <h2 className="text-2xl font-bold text-emerald-700 my-6">My Boutiques</h2>
       {boutiques.map((b) => (
         <div
           key={b._id}

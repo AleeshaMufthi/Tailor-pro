@@ -3,6 +3,7 @@ import Order from "../models/Order";
 import OrderItem from "../models/OrderItem";
 import Measurement from "../models/Measurement";
 import { generateOrderNumber } from "../utils/generateOrderNumber";
+import Boutique from "../models/Boutique";
 
 export const createOrder = async (req: Request, res: Response) => {
   try {
@@ -318,6 +319,7 @@ export const updateOutfitStatus = async (req: Request, res: Response) => {
 
 export const getOrdersCountByDate = async (req: Request, res: Response) => {
   try {
+
     console.log("Fetching order count by date...", req.query);
 
     const { date } = req.query;
@@ -337,21 +339,25 @@ export const getOrdersCountByDate = async (req: Request, res: Response) => {
     const end = new Date(parsedDate);
     end.setHours(23, 59, 59, 999);
 
-    if (!(req as any).boutiqueId) {
-    return res.status(400).json({
-    message: "Active boutique not found",
-    });
-  }
+    const boutiqueId = (req as any).boutiqueId;
+
+    const boutique = await Boutique.findById(boutiqueId).select(
+      "dailyOrderLimit"
+    );
+
+    if (!boutique) {
+      return res.status(400).json({ message: "Boutique not found" });
+    }
 
     const count = await OrderItem.countDocuments({
-      boutique: (req as any).boutiqueId,
+      boutique: boutiqueId,
       deliveryDate: {    
         $gte: start,
         $lte: end,
       },
     });
 
-    const LIMIT = 15;
+    const LIMIT = boutique.dailyOrderLimit;
 
     return res.json({
       date,

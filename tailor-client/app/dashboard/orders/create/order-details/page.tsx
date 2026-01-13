@@ -114,6 +114,8 @@ export default function OrderDetailsPage() {
 
   const [dailyOrderCount, setDailyOrderCount] = useState<number | null>(null);
   const [showLimitModal, setShowLimitModal] = useState(false);
+  const [orderLimit, setOrderLimit] = useState<number | null>(null);
+
   const ORDER_LIMIT = 15;
 
   useEffect(() => {
@@ -201,6 +203,7 @@ export default function OrderDetailsPage() {
       const res = await api.get(`/api/orders/count-by-date?date=${date}`);
       console.log("Order count response:", res.data);
       setDailyOrderCount(res.data.totalOrders);
+      setOrderLimit(res.data.limit);
       if (res.data.exceeded) {
         setShowLimitModal(true);
       }
@@ -553,16 +556,16 @@ export default function OrderDetailsPage() {
             value={activeOutfit.deliveryDate ?? ""}
             onChange={(e) => handleDeliveryDateChange(e.target.value)}
           />
-          {dailyOrderCount !== null && (
+          {dailyOrderCount !== null && orderLimit !== null && (
             <p
               className={`mt-2 ${
-                dailyOrderCount >= ORDER_LIMIT
+                dailyOrderCount >= orderLimit
                   ? "text-red-600/30 text-red-400 px-2 py-2 rounded-lg text-md font-semibold"
                   : "bg-yellow-500/30 text-yellow-700 px-2 py-2 rounded-lg text-md font-semibold"
               }`}
             >
               Total {dailyOrderCount} orders placed on this day. Maximum{" "}
-              {ORDER_LIMIT} orders allowed.
+              {orderLimit} orders allowed.
             </p>
           )}
         </div>
