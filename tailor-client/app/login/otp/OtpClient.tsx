@@ -61,7 +61,8 @@ export default function OtpClient() {
 
       if (!res.data.user.isProfileCompleted) {
 
-        router.push("/profile");
+        router.push("/complete-profile");
+        
       } else if (res.data.user.role === "staff") {
         router.push("/dashboard/orders");
       } else{

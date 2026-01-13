@@ -5,6 +5,7 @@ export interface IBoutique extends Document {
   owner: mongoose.Schema.Types.ObjectId;
   tailorType?: "gents" | "ladies" | "both";
   shopPhoto?: string;
+  dailyOrderLimit: number;
   createdAt: Date;
 }
 
@@ -17,6 +18,10 @@ const boutiqueSchema = new Schema<IBoutique>(
       enum: ["gents", "ladies", "both"],
     },
     shopPhoto: String,
+    dailyOrderLimit: {
+      type: Number,
+      default: 15,
+    },
   },
   { timestamps: true }
 );

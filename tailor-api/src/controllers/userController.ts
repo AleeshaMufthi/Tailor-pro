@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import User  from "../models/User";
+import Boutique from "../models/Boutique";
 
 export const getUser = async (req: Request, res: Response) => {
   try {
@@ -13,15 +14,12 @@ export const getUser = async (req: Request, res: Response) => {
       user: {
         id: user._id,
         email: user.email,
-        name: user.name || "",
         isProfileCompleted: user.isProfileCompleted,
         fullName: user.fullName || "",
-        shopName: user.shopName || "",
-        tailorType: user.tailorType || "",
-        userPhoto: user.userPhoto || "",
-        shopPhoto: user.shopPhoto || "",
         phone: user.phone || "",
         role: user.role,
+        boutiques: user.boutiques?.map(b => b.toString()) || [], 
+        activeBoutique: user.activeBoutique?.toString() || null,  
       },
     });
   } catch (err) {
@@ -33,37 +31,55 @@ export const updateProfile = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.userId;
 
-    const {
-      fullName,
-      shopName,
-      tailorType,
-      userPhoto,
-      shopPhoto,
-      phone,
-    } = req.body;
+    const { fullName, phone, userPhoto } = req.body;
 
     const user = await User.findByIdAndUpdate(
       userId,
-      {
-        fullName,
-        shopName,
-        tailorType,
-        userPhoto,
-        shopPhoto,
-        isProfileCompleted: true,
-        phone,
-      },
+      { fullName, phone, userPhoto },
       { new: true }
     ).select("-otp -otpExpires");
-    
-    return res.json({
-      message: "Profile updated successfully",
-      user,
-    });
-  } catch (err) {
-    return res.status(500).json({ message: "Failed to update profile" });
+
+    res.json({ message: "Profile updated", user });
+  } catch {
+    res.status(500).json({ message: "Profile update failed" });
   }
 };
+
+export const completeProfile = async (req: any, res: Response) => {
+  console.log("Complete profile called", req.body);
+  const { fullName, phone, boutiques } = req.body;
+  const userId = req.user.userId;
+
+  if (!boutiques || boutiques.length === 0) {
+    return res.status(400).json({ message: "At least one boutique required" });
+  }
+
+  const createdBoutiques = await Boutique.insertMany(
+    boutiques.map((b: any) => ({
+      name: b.name,
+      owner: userId,
+    }))
+  );
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    {
+      fullName,
+      phone,
+      boutiques: createdBoutiques.map(b => b._id),
+      activeBoutique: createdBoutiques[0]._id,
+      isProfileCompleted: true,
+    },
+    { new: true }
+  );
+
+  res.json({
+    user,
+    boutiques: createdBoutiques,
+    activeBoutique: createdBoutiques[0],
+  });
+};
+
 
 export const getUserProfile = async (req: Request, res: Response) => {
   try {

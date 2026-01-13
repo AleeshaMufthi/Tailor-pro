@@ -16,6 +16,9 @@ type User = {
   userPhoto: string;
   shopPhoto: string;
   role: "owner" | "staff" | "other";
+
+  activeBoutique?: string;        // _id of currently active boutique
+  boutiques?: string[];           // list of boutique _ids the owner has
 }
 
 type AuthContextType = {

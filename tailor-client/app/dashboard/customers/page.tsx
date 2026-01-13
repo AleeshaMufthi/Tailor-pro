@@ -98,6 +98,8 @@ export default function SelectCustomerPage() {
 </div>
 
         ))}
+
+         {!loading && customers.length === 0 && <p className="text-gray-600 font-semibold">No customers found.</p>}
       </div>
     </div>
   );

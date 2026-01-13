@@ -22,6 +22,8 @@ export interface ICustomer extends Document {
 
   createdAt: Date;
 
+  boutique: mongoose.Schema.Types.ObjectId;
+
 }
 
 const customerSchema = new Schema<ICustomer>(
@@ -47,6 +49,8 @@ const customerSchema = new Schema<ICustomer>(
   notes: { type: String },
 
   createdAt: { type: Date, default: Date.now },
+
+  boutique: { type: mongoose.Schema.Types.ObjectId, ref: "Boutique", required: true },
 
   },
 

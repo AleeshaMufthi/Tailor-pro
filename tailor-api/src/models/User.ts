@@ -1,84 +1,70 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface IUser extends Document {
-
-  name?: string;
-
   email: string;
-
   phone?: string;
-
-  isProfileCompleted: boolean;
-
   fullName?: string;
-
-  shopName?: string;
-
-  tailorType?: "gents" | "ladies" | "both";
-
   userPhoto?: string;
 
-  shopPhoto?: string;
-
-  otp?: string;
+  role: "owner" | "staff";
   
+  boutiques?: Types.ObjectId[];
+  activeBoutique?: Types.ObjectId;
+  boutique?: Types.ObjectId;
+  createdBy?: Types.ObjectId;
+
+  password?: string;
+  otp?: string;
   otpExpires?: Date;
-
-  role?: "owner" | "staff";
-
-  password?: string; // add this
-createdBy?: mongoose.Schema.Types.ObjectId;
-
+  isProfileCompleted: boolean;
 }
 
 const userSchema = new Schema<IUser>(
   {
-    name: String,
-
     email: { type: String, required: true },
-
     phone: String,
-
-    isProfileCompleted: { type: Boolean, default: false },
-
     fullName: String,
-
-    shopName: String,
-
-    tailorType: {
-      type: String,
-      enum: ["gents", "ladies", "both"],
-    },
-
     userPhoto: String,
 
-    shopPhoto: String,
+    role: {
+      type: String,
+      enum: ["owner", "staff"],
+      default: "owner",
+    },
+
+    // OWNER
+    boutiques: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Boutique",
+      },
+    ],
+    activeBoutique: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Boutique",
+    },
+
+    boutique: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Boutique",
+    },
+    
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+
+    password: {
+      type: String,
+      select: false,
+    },
 
     otp: String,
-
     otpExpires: Date,
 
-    role: {
-  type: String,
-  enum: ["owner", "staff"],
-  default: "owner" // the first registered user will be owner
-},
-
-password: {
-  type: String,
-  select: false, // security
-},
-
-createdBy: {
-  type: mongoose.Schema.Types.ObjectId,
-  ref: "User",
-},
-
-
+    isProfileCompleted: { type: Boolean, default: false },
   },
-
   { timestamps: true }
-
 );
 
 export default mongoose.model<IUser>("User", userSchema);

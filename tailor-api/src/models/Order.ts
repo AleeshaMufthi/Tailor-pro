@@ -34,6 +34,8 @@ export interface IOrder extends Document {
 
     isArchived?: boolean;
 
+    boutique?: mongoose.Schema.Types.ObjectId;
+
 }
 
 const orderSchema = new Schema<IOrder>(
@@ -77,7 +79,9 @@ const orderSchema = new Schema<IOrder>(
 
   notes: String,
   
-  isArchived: { type: Boolean, default: false }
+  isArchived: { type: Boolean, default: false },
+
+  boutique: { type: mongoose.Schema.Types.ObjectId, ref: "Boutique", required: true },
 
   },
 

@@ -15,6 +15,8 @@ export const createOrder = async (req: Request, res: Response) => {
        
     } = req.body;
 
+    const boutiqueId = (req as any).boutiqueId; 
+
     if (!customerId)
       return res.status(400).json({ message: "customerId is required" });
 
@@ -65,6 +67,7 @@ for (const date of uniqueDeliveryDates) {
 
       // Create OrderItem
       const orderItem = await OrderItem.create({
+        boutique: boutiqueId,
         name: item.name,
         category: item.category,
         quantity: item.quantity || 1,
@@ -94,6 +97,7 @@ for (const date of uniqueDeliveryDates) {
 
     const order = await Order.create({
       orderNumber,
+      boutique: boutiqueId,
       customer: customerId,
       items: createdItemIds,
       totalAmount,
@@ -120,8 +124,12 @@ for (const date of uniqueDeliveryDates) {
 // Get All Orders
 export const getAllOrders = async (req: Request, res: Response) => {
   try {
+    const boutiqueId = (req as any).boutiqueId;
+    if (!boutiqueId) {
+      return res.status(400).json({ message: "Active boutique not found" });
+    }
     console.log("Fetching all orders...")
-    const orders = await Order.find()
+    const orders = await Order.find({ boutique: boutiqueId })
       .populate("customer")
       .populate({
         path: "items",
@@ -137,6 +145,7 @@ export const getAllOrders = async (req: Request, res: Response) => {
 // update order status
 export const updateOrderStatus = async (req: Request, res: Response) => {
   try {
+    const boutiqueId = (req as any).boutiqueId;
     const { status } = req.body;
     const { orderId } = req.params;
 
@@ -153,8 +162,8 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
     if (!allowed.includes(status))
       return res.status(400).json({ message: "Invalid status" });
 
-    const order = await Order.findByIdAndUpdate(
-      orderId,
+    const order = await Order.findOneAndUpdate(
+      { boutique: boutiqueId, _id: orderId },
       { status },
       { new: true }
     );
@@ -169,9 +178,10 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
 // Get Order by ID
 export const getOrderById = async (req: Request, res: Response) => {
   try {
-    const order = await Order.findById(req.params.id)
+    const boutiqueId = (req as any).boutiqueId;
+    const order = await Order.findOne({ boutique: boutiqueId, _id: req.params.id })
       .populate("customer")
-        .populate({
+      .populate({
     path: "items",
     populate: {
       path: "measurements",
@@ -190,6 +200,7 @@ export const getOrderById = async (req: Request, res: Response) => {
 
 export const receivePayment = async (req: Request, res: Response) => {
   try {
+    const boutiqueId = (req as any).boutiqueId;
     const { id } = req.params;
     const { amount } = req.body;
 
@@ -197,12 +208,10 @@ export const receivePayment = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid amount" });
     }
 
-    const order = await Order.findById(id);
+    const order = await Order.findOne({ boutique: boutiqueId, _id: id });
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
-
-    // ❗ totalAmount NEVER changes here
 
     const currentAdvance = order.advanceGiven || 0;
     const newAdvance = currentAdvance + amount;
@@ -232,12 +241,13 @@ export const addExtraCharge = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { reason, amount } = req.body;
+    const boutiqueId = (req as any).boutiqueId;
 
     if (!reason || !amount || amount <= 0) {
       return res.status(400).json({ error: "Invalid charge data" });
     }
 
-    const order = await Order.findById(id);
+    const order = await Order.findOne({ boutique: boutiqueId, _id: id });
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
@@ -266,50 +276,12 @@ export const addExtraCharge = async (req: Request, res: Response) => {
   }
 };
 
-
-
-
-
-// update outfit status
-// export const updateOutfitStatus = async (req: Request, res: Response) => {
-//   try {
-
-//     const { itemId } = req.params;
-
-//     const { status } = req.body;
-
-//     const item = await OrderItem.findById(itemId);
-
-//     if (!item) {
-
-//       return res.status(404).json({ message: "Order item not found" });
-
-//     }
-
-//     item.status = status;
-
-//     await item.save();
-
-//     return res.json({
-
-//       success: true,
-
-//       message: "Outfit status updated",
-
-//       item,
-//     });
-
-//   } catch (err: any) {
-
-//     return res.status(500).json({ message: err.message });
-
-//   }
-// };
 // update outfit status
 export const updateOutfitStatus = async (req: Request, res: Response) => {
   try {
     const { itemId } = req.params;
     const { status } = req.body;
+    const boutiqueId = (req as any).boutiqueId;
 
     // Update OrderItem status
     const item = await OrderItem.findById(itemId);
@@ -319,7 +291,7 @@ export const updateOutfitStatus = async (req: Request, res: Response) => {
     await item.save();
 
     // Find the parent order (item._id is inside order.items array)
-    const order = await Order.findOne({ items: itemId }).populate("items");
+    const order = await Order.findOne({ items: itemId, boutique: boutiqueId }).populate("items");
     console.log(order,"📦parent order")
     if (!order) return res.status(404).json({ message: "Parent order not found" });
 
@@ -365,9 +337,15 @@ export const getOrdersCountByDate = async (req: Request, res: Response) => {
     const end = new Date(parsedDate);
     end.setHours(23, 59, 59, 999);
 
+    if (!(req as any).boutiqueId) {
+    return res.status(400).json({
+    message: "Active boutique not found",
+    });
+  }
+
     const count = await OrderItem.countDocuments({
-      deliveryDate: {
-        $ne: null,    
+      boutique: (req as any).boutiqueId,
+      deliveryDate: {    
         $gte: start,
         $lte: end,
       },

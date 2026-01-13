@@ -1,19 +1,21 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
+import User from "../models/User";
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = async ( req: Request, res: Response, next: NextFunction ) => {
   try {
-    let token = null;
+    
+    let token: string | null = null;
+
     let decoded: any = null;
 
-    // 1. Check Authorization header first
     const auth = req.headers.authorization;
+
     if (auth?.startsWith("Bearer ")) {
       token = auth.split(" ")[1];
       decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET!);
     }
 
-    // 2. If no access token, try refresh token from cookies
     if (!decoded && req.cookies?.refreshToken) {
       token = req.cookies.refreshToken;
       decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET!);
@@ -23,7 +25,22 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    (req as any).user = { userId: decoded.userId };
+    const user = await User.findById(decoded.userId).select(
+      "role activeBoutique boutique boutiques"
+    );  
+
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    };
+
+    // ✅ FULL user context (IMPORTANT)
+    (req as any).user = {
+      userId: user._id.toString(),
+      role: user.role,
+      activeBoutique: user.activeBoutique,
+      boutique: user.boutique,
+      boutiques: user.boutiques,
+    };
 
     next();
   } catch (err) {

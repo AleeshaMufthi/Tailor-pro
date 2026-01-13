@@ -30,6 +30,7 @@ export interface IOutfit extends Document {
   isDefault: boolean;
   createdBy?: mongoose.Types.ObjectId;
   measurements?: IMeasurements;
+  boutique: mongoose.Types.ObjectId;
 }
 
 const CustomMeasurementSchema = new Schema<ICustomMeasurement>({
@@ -63,6 +64,7 @@ const OutfitSchema = new Schema<IOutfit>(
     isDefault: { type: Boolean, default: false },
     createdBy: { type: Schema.Types.ObjectId, ref: "User" },
     measurements: MeasurementsSchema,
+    boutique: { type: Schema.Types.ObjectId, ref: "Boutique", required: true },
   },
   { timestamps: true }
 );

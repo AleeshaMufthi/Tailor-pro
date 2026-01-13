@@ -5,6 +5,7 @@ export interface IOutfit extends Document {
   image?: string;
   isDefault: boolean;
   createdBy?: mongoose.Types.ObjectId;
+  boutique: mongoose.Types.ObjectId;
 }
 
 const OutfitSchema = new Schema<IOutfit>(
@@ -13,6 +14,7 @@ const OutfitSchema = new Schema<IOutfit>(
     image: { type: String },
     isDefault: { type: Boolean, default: false },
     createdBy: { type: Schema.Types.ObjectId, ref: "User" },
+    boutique: { type: Schema.Types.ObjectId, ref: "Boutique", required: true },
   },
   { timestamps: true }
 );

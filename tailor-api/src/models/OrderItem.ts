@@ -82,6 +82,8 @@ export interface IOrderItem extends Document {
 
     deliveryDate?: Date,
 
+    boutique?: mongoose.Schema.Types.ObjectId;
+   
 }
 
 const orderitemSchema = new Schema<IOrderItem>(
@@ -117,7 +119,8 @@ const orderitemSchema = new Schema<IOrderItem>(
   trialDate: Date,
 
   deliveryDate: Date,
-  
+
+  boutique: { type: mongoose.Schema.Types.ObjectId, ref: "Boutique", required: true },
 },
   { timestamps: true }
 );

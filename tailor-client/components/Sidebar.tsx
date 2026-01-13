@@ -21,6 +21,7 @@ const menuItems = [
     : []),
   { name: "Orders", href: "/dashboard/orders" },
   { name: "Customers", href: "/dashboard/customers" },
+  { name: "Settings", href: "/dashboard/boutiques" },
   { name: "Smart Calendar", href: "/dashboard/calendar" },
   { name: "FAQs", href: "/dashboard/faq" },
   { name: "Privacy Policy", href: "/dashboard/policy" },

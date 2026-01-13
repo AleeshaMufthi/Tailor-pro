@@ -31,7 +31,7 @@ useEffect(() => setMounted(true), []);
         
         {/* Left: Logo */}
         <div className="flex items-center gap-10">
-          <div className="flex items-center gap-1 ml-0">
+          <Link href="/dashboard" className="flex items-center gap-1 ml-0">
             <img
               src="/dressmaker.png"
               alt="TailorPro Logo"
@@ -40,7 +40,7 @@ useEffect(() => setMounted(true), []);
             <span className="font-bold text-2xl text-black">
               Tailor<span className="text-emerald-500">Pro</span>
             </span>
-          </div>
+          </Link>
 
           {/* Navigation links — ONLY when logged OUT */}
           {!isLoggedIn && (
