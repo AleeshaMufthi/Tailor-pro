@@ -301,7 +301,7 @@ export default function OrderDetailsPage() {
       return { ...prev, outfits };
     });
 
-    router.push("/dashboard/orders/create/summary");
+    router.push("/tailor/dashboard/orders/create/summary");
   };
 
   const handleFileUpload = async (
@@ -397,7 +397,7 @@ export default function OrderDetailsPage() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <Link
-        href="/dashboard/orders/create"
+        href="/tailor/dashboard/orders/create"
         className="flex items-center gap-2 text-emerald-600 mb-4 font-semibold"
       >
         <ChevronLeft className="w-5 h-5" />

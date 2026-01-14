@@ -36,7 +36,7 @@ export default function CompleteProfilePage() {
       console.log("Profile completion response:", res.data);
 
       setUser(res.data.user);
-      router.replace("/dashboard");
+      router.replace("/tailor/dashboard");
     } catch {
       alert("Profile setup failed");
     } finally {

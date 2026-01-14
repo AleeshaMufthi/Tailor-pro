@@ -23,8 +23,6 @@ export default function Sidebar() {
   const fetchActiveBoutique = async () => {
     try {
       const res = await api.get("/api/boutique/active");
-      console.log(res, 'active boutique response');
-      console.log(res.data, 'active boutique fetched');
       setActiveBoutique(res.data);
     } catch {}
   };
@@ -39,16 +37,16 @@ if (!user) return null;
 const menuItems = [
   ...(user.role === "owner"
     ? [
-        { name: "Dashboard", href: "/dashboard" },
-        { name: "Add Staff", href: "/dashboard/staff" },
+        { name: "Dashboard", href: "/tailor/dashboard" },
+        { name: "Add Staff", href: "/tailor/dashboard/staff" },
       ]
     : []),
-  { name: "Orders", href: "/dashboard/orders" },
-  { name: "Customers", href: "/dashboard/customers" },
-  { name: "Settings", href: "/dashboard/boutiques" },
-  { name: "Smart Calendar", href: "/dashboard/calendar" },
-  { name: "FAQs", href: "/dashboard/faq" },
-  { name: "Privacy Policy", href: "/dashboard/policy" },
+  { name: "Orders", href: "/tailor/dashboard/orders" },
+  { name: "Customers", href: "/tailor/dashboard/customers" },
+  { name: "Settings", href: "/tailor/dashboard/boutiques" },
+  { name: "Smart Calendar", href: "/tailor/dashboard/calendar" },
+  { name: "FAQs", href: "/tailor/dashboard/faq" },
+  { name: "Privacy Policy", href: "/tailor/dashboard/policy" },
 ];
 
 

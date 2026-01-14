@@ -4,16 +4,36 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import api from "@/lib/axios";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Trash2, X } from "lucide-react";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [filter, setFilter] = useState("active");
   const [loading, setLoading] = useState(true);
 
+  const [deleteOrderId, setDeleteOrderId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+
   useEffect(() => {
     fetchOrders();
   }, []);
+
+  const handleDeleteOrder = async () => {
+  if (!deleteOrderId) return;
+
+  try {
+    setDeleting(true);
+    await api.delete(`/api/orders/${deleteOrderId}/delete`);
+    setDeleteOrderId(null);
+    fetchOrders();
+  } catch (err) {
+    console.error("Failed to delete order", err);
+  } finally {
+    setDeleting(false);
+  }
+};
+
 
 const filterColors: any = {
   active: "text-emerald-700 border-emerald-700",
@@ -99,7 +119,7 @@ const hasUpcomingItem = (order: any, today: Date) =>
 
     <div className="flex justify-end">
       <Link
-        href="/dashboard/customers"
+        href="/tailor/dashboard/customers"
         className="px-6 py-4 bg-blue-400 text-black font-semibold rounded-full border border-blue-700 hover:bg-blue-500 transition inline-block"
       >
       Create New Order
@@ -131,6 +151,52 @@ const hasUpcomingItem = (order: any, today: Date) =>
     key={order._id}
     className="relative bg-white border rounded-xl p-5 shadow hover:shadow-lg transition"
   >
+
+    <button
+  onClick={() => setDeleteOrderId(order._id)}
+  className="absolute top-3 right-3 text-red-500 hover:text-red-700"
+>
+  <Trash2 size={18} />
+</button>
+
+{deleteOrderId && (
+  <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
+    <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold text-gray-800">
+          Delete Order?
+        </h2>
+        <button onClick={() => setDeleteOrderId(null)}>
+          <X />
+        </button>
+      </div>
+
+      <p className="text-gray-600 mb-6">
+        Are you sure you want to delete this order?  
+        This action cannot be undone.
+      </p>
+
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => setDeleteOrderId(null)}
+          className="px-4 py-2 rounded-full border"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={handleDeleteOrder}
+          disabled={deleting}
+          className="px-4 py-2 rounded-full bg-red-600 text-white hover:bg-red-700"
+        >
+          {deleting ? "Deleting..." : "Delete"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
     {/* Status badge */}
     <span
       className={`absolute top-3 left-3 px-3 py-1 text-xs font-semibold rounded-full capitalize
@@ -162,14 +228,14 @@ const hasUpcomingItem = (order: any, today: Date) =>
     {/* Buttons */}
     <div className="mt-6 flex flex-col gap-2">
       <Link
-        href={`/dashboard/orders/${order._id}`}
+        href={`/tailor/dashboard/orders/${order._id}`}
         className="w-full text-center py-2 rounded-full bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700"
       >
         View Order Details
       </Link>
 
       <Link
-        href={`/dashboard/orders/${order._id}/item/${order.items?.[0]?._id}`}
+        href={`/tailor/dashboard/orders/${order._id}/item/${order.items?.[0]?._id}`}
         className="w-full text-center py-2 rounded-full border border-emerald-600 text-emerald-600 text-sm font-medium hover:bg-emerald-50"
       >
         View Outfit Details

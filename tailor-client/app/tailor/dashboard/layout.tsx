@@ -1,7 +1,7 @@
 "use client";
 
 import Sidebar from "@/components/Sidebar";
-import { OrderProvider } from "../context/OrderContext";
+import { OrderProvider } from "@/app/context/OrderContext";
 
 export default function DashboardLayout({
   children,

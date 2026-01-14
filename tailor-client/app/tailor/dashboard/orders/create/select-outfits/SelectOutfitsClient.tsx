@@ -119,7 +119,7 @@ const addCustomOutfit = async () => {
       outfits: selected,
     }));
 
-    router.push("/dashboard/orders/create/order-details");
+    router.push("/tailor/dashboard/orders/create/order-details");
   };
 
   return (

@@ -6,14 +6,67 @@ import api from "@/lib/axios";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
+export const DEFAULT_MEASUREMENT_CONFIG: Record<
+  string,
+  {
+    label: string;
+    image: string;
+  }
+> = {
+  shoulder: {
+    label: "Shoulder",
+    image: "/measurements/shoulder.jpg",
+  },
+  chest: {
+    label: "Chest",
+    image: "/measurements/chest.jpg",
+  },
+  waist: {
+    label: "Waist",
+    image: "/measurements/waist.jpg",
+  },
+  hip: {
+    label: "Hip",
+    image: "/measurements/hip.jpg",
+  },
+  neck: {
+    label: "Neck",
+    image: "/measurements/neck.jpg",
+  },
+  sleeveLength: {
+    label: "Sleeve Length",
+    image: "/measurements/sleeve_length.jpg",
+  },
+  wrist: {
+    label: "Wrist",
+    image: "/measurements/wrist_circumference.jpg",
+  },
+  armhole: {
+    label: "Armhole",
+    image: "/measurements/arm_hole.jpg",
+  },
+  hipCircumference: {
+    label: "Hip Circumference",
+    image: "/measurements/hip_circumference.jpg",
+  },
+  kneeCircumference: {
+    label: "Knee Circumference",
+    image: "/measurements/knee_circumference.jpg",
+  },
+  bottomlength: {
+    label: "Bottom Length",
+    image: "/measurements/Bottomlength.jpg",
+  },
+  ankle: {
+    label: "Ankle",
+    image: "/measurements/ankle.jpg",
+  },
+};
 export default function OrderDetailsPage() {
-  // const params = useParams();
-  // const orderId = params.id as string;
 
-  const params = useParams();
+const params = useParams();
 
 if (!params) {
-  // params is null, show loading or error
   return <div>Loading...</div>;
 }
 
@@ -30,6 +83,7 @@ const orderId = params.id as string;
     setLoading(true);
     try {
       const res = await api.get(`/api/orders/${orderId}`);
+      console.log(res.data.order, "Fetched order details");
       setOrder(res.data.order);
     } catch (err) {
       console.error("Error fetching order:", err);
@@ -51,9 +105,8 @@ const orderId = params.id as string;
 
   return (
     <div className="p-6 space-y-6">
-      {/* Back */}
       <Link
-        href="/dashboard/orders"
+        href="/tailor/dashboard/orders"
         className="text-gray-600 flex items-center gap-1"
       >
         <ChevronLeft size={20} />
@@ -156,23 +209,79 @@ const orderId = params.id as string;
             )}
 
             {/* Measurements */}
-            {item.measurements?.values && (
-              <div>
-                <h3 className="font-semibold">Measurements</h3>
-                <ul className="ml-4 list-disc">
-                  {Object.entries(item.measurements.values).map(
-                    ([key, val]) => (
-                      <li key={key}>
-                        <strong>{key}:</strong> {val as string}
-                      </li>
-                    )
-                  )}
-                </ul>
-              </div>
-            )}
+{item.measurements && (
+  <div className="space-y-4">
+    <h3 className="font-semibold text-lg">Measurements</h3>
 
-              <p><strong>Stitching Price:</strong> ₹{item.stitchingPrice}</p>
-              <p><strong>Additional Price:</strong> ₹{item.additionalPrice}</p>
+    {/* Custom Measurements */}
+    {item.measurements.custom?.length > 0 && (
+      <div>
+        <h4 className="font-medium mb-2">Custom Measurements</h4>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {item.measurements.custom.map((m: any, idx: number) => (
+            <div
+              key={idx}
+              className="border rounded-lg p-3 shadow-sm space-y-2"
+            >
+              <p>
+                <strong>{m.name}</strong>: {m.size}
+              </p>
+
+              {m.imageUrl && (
+                <img
+                  src={m.imageUrl}
+                  alt={m.name}
+                  className="w-full h-32 object-cover rounded"
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {/* Default Measurements */}
+{item.measurements?.defaults &&
+  Object.keys(item.measurements.defaults).length > 0 && (
+    <div>
+      <h4 className="font-medium mb-3">Standard Measurements</h4>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {Object.entries(item.measurements.defaults).map(
+          ([key, value]) => {
+            const config = DEFAULT_MEASUREMENT_CONFIG[key];
+
+            return (
+              <div
+                key={key}
+                className="border rounded-lg p-3 shadow-sm space-y-2"
+              >
+                <p>
+                  <strong>
+                    {config?.label ?? key}
+                  </strong>
+                  : {value}
+                </p>
+
+                {config?.image && (
+                  <img
+                    src={config.image}
+                    alt={config.label}
+                    className="w-full h-32 object-cover rounded"
+                  />
+                )}
+              </div>
+            );
+          }
+        )}
+      </div>
+    </div>
+  )}
+  </div>
+)}
+<p><strong>Stitching Price:</strong> ₹{item.stitchingPrice}</p>
+<p><strong>Additional Price:</strong> ₹{item.additionalPrice}</p>
 
             {/* Stitch Options */}
             {item.stitchOptions &&

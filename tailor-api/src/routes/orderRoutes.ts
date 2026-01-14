@@ -1,5 +1,5 @@
 import express from "express";
-import { createOrder, getAllOrders, updateOrderStatus, getOrderById, updateOutfitStatus, receivePayment, addExtraCharge, getOrdersCountByDate } from "../controllers/orderController";
+import { createOrder, getAllOrders, updateOrderStatus, getOrderById, updateOutfitStatus, receivePayment, addExtraCharge, getOrdersCountByDate, deleteOrder } from "../controllers/orderController";
 import { requireBoutique } from "../middleware/boutiqueMiddleware";
 import { authMiddleware } from "../middleware/authMiddleware";
 
@@ -14,6 +14,8 @@ router.patch("/:orderId/status", authMiddleware, requireBoutique, updateOrderSta
 router.get("/count-by-date",authMiddleware, requireBoutique, getOrdersCountByDate );
 
 router.get("/:id", authMiddleware, requireBoutique, getOrderById);
+
+router.delete("/:id/delete", authMiddleware, requireBoutique, deleteOrder);
 
 router.patch("/:id/receive-payment", authMiddleware, requireBoutique, receivePayment); 
 

@@ -63,7 +63,7 @@ export default function OrderSummaryPage() {
       console.log("Submitting order payload:", payload)
 
       await api.post("/api/orders/create", payload);
-      router.push("/dashboard/orders");
+      router.push("/tailor/dashboard/orders");
     } catch (err: any) {
       console.error(err);
       alert("Order submission failed");
@@ -72,8 +72,8 @@ export default function OrderSummaryPage() {
 
   return (
     <div className="p-6 space-y-6">
-            <Link
-        href="/dashboard/orders/create/order-details"
+      <Link
+        href="/tailor/dashboard/orders/create/order-details"
         className="text-gray-600 flex items-center gap-1"
       >
       <ChevronLeft size={20} />

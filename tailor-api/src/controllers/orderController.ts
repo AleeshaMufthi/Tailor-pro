@@ -130,7 +130,7 @@ export const getAllOrders = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Active boutique not found" });
     }
     console.log("Fetching all orders...")
-    const orders = await Order.find({ boutique: boutiqueId })
+    const orders = await Order.find({ boutique: boutiqueId, isArchived: false, })
       .populate("customer")
       .populate({
         path: "items",
@@ -372,6 +372,25 @@ export const getOrdersCountByDate = async (req: Request, res: Response) => {
   }
 };
 
+// delete order
+export const deleteOrder = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const order = await Order.findById(id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    // Soft delete
+    order.isArchived = true;
+    await order.save();
+    return res.json({ message: "Order deleted successfully" });
+  } catch (error) {
+    console.error("Delete order error:", error);
+    res.status(500).json({ message: "Failed to delete order" });
+  }
+};
 
 
 

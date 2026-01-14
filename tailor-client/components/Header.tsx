@@ -31,7 +31,7 @@ useEffect(() => setMounted(true), []);
         
         {/* Left: Logo */}
         <div className="flex items-center gap-10">
-          <Link href="/dashboard" className="flex items-center gap-1 ml-0">
+          <Link href="/tailor/dashboard" className="flex items-center gap-1 ml-0">
             <img
               src="/dressmaker.png"
               alt="TailorPro Logo"
@@ -108,7 +108,7 @@ useEffect(() => setMounted(true), []);
                 }`}
               >
                 <Link
-                  href="/profile"
+                  href="/tailor/profile"
                   className="block px-6 py-4 hover:bg-gray-100 text-md font-medium"
                 >
                   Profile

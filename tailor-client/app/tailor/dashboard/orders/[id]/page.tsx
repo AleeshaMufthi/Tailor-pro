@@ -64,7 +64,7 @@ const id = params.id;
 
   return (
     <div className="p-6 space-y-6">
-      <Link href="/dashboard/orders" className="flex items-center gap-1 text-gray-600">
+      <Link href="/tailor/dashboard/orders" className="flex items-center gap-1 text-gray-600">
         <ChevronLeft size={20} />
         Back to Orders
       </Link>

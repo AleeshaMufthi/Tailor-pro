@@ -75,7 +75,7 @@ export default function ProfilePage() {
 <div className="max-w-3xl mx-auto mt-12 space-y-8">
 
   <Link
-    href="/dashboard"
+    href="/tailor/dashboard"
     className="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm"
   >
   <ChevronLeft size={18} />
@@ -198,7 +198,7 @@ export default function ProfilePage() {
             key={b._id}
             className="px-4 py-3 rounded-lg border bg-gray-50 text-gray-800 font-medium"
           >
-            <Link className="text-gray-800 font-medium hover:underline" href={`/dashboard/boutiques`}>
+            <Link className="text-gray-800 font-medium hover:underline" href={`/tailor/dashboard/boutiques`}>
               {b.name}
             </Link>
             {/* {b.name} */}

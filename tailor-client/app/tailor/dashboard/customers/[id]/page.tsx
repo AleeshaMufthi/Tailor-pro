@@ -56,7 +56,7 @@ const isDeliveredOrder = (order: any) =>
   return (
     <div className="p-6">
 
-      <Link href="/dashboard/customers" className="text-gray-600 flex items-center gap-1 mb-4">
+      <Link href="/tailor/dashboard/customers" className="text-gray-600 flex items-center gap-1 mb-4">
         <ChevronLeft size={20} />
         Back to Customers
       </Link>
@@ -151,7 +151,7 @@ const isDeliveredOrder = (order: any) =>
       </p>
 
       <Link
-        href={`/dashboard/orders/${order._id}`}
+        href={`/tailor/dashboard/orders/${order._id}`}
         className="text-emerald-600 text-sm font-medium"
       >
         View Order →
@@ -175,7 +175,7 @@ const isDeliveredOrder = (order: any) =>
       </p>
 
       <Link
-        href={`/dashboard/orders/${order._id}`}
+        href={`/tailor/dashboard/orders/${order._id}`}
         className="text-emerald-600 text-sm font-medium"
       >
         View Order →

@@ -34,7 +34,7 @@ export default function SelectCustomerPage() {
     console.log("Selected Customer:", customerId);
 
     router.push(
-      `/dashboard/orders/create/select-outfits?customerId=${customerId}`
+      `/tailor/dashboard/orders/create/select-outfits?customerId=${customerId}`
     );
   };
 
@@ -88,7 +88,7 @@ export default function SelectCustomerPage() {
     </button>
 
     <Link
-      href={`/dashboard/customers/${c._id}`}
+      href={`/tailor/dashboard/customers/${c._id}`}
       className="px-4 py-2 bg-gray-200 rounded-md text-md font-semibold"
     >
       View Details

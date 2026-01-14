@@ -10,7 +10,7 @@ export function middleware(req: NextRequest) {
   }
 
   // If requesting dashboard and no refresh cookie -> redirect to auth
-  if (pathname.startsWith("/dashboard")) {
+  if (pathname.startsWith("/tailor/dashboard")) {
     const refresh = req.cookies.get("refreshToken")?.value;
     if (!refresh) {
       return NextResponse.redirect(new URL("/auth", req.url));
@@ -21,7 +21,7 @@ export function middleware(req: NextRequest) {
   if (pathname.startsWith("/auth") || pathname.startsWith("/login")) {
     const refresh = req.cookies.get("refreshToken")?.value;
     if (refresh) {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
+      return NextResponse.redirect(new URL("/tailor/dashboard", req.url));
     }
   }
 
@@ -29,5 +29,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/auth/:path*", "/login/:path*"],
+  matcher: ["/tailor/dashboard/:path*", "/auth/:path*", "/login/:path*"],
 };
