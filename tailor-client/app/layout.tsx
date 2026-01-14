@@ -1,32 +1,16 @@
 import './globals.css'
 import { ReactNode } from 'react'
-import { AuthProvider } from './context/AuthContext'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
 
 export const metadata = {
-  title: 'Tailor Pro - Tailor Management',
-  description: 'Manage customers, orders, calendar and invoices for tailor boutiques.',
+  title: 'ALGON',
+  description: 'Tailor Pro, Store, and Fashion Social Platform',
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-
   return (
     <html lang="en">
       <body>
-        <AuthProvider>
-          {/* <div className="min-h-screen bg-gray-50 text-gray-900"> */}
-            
-            <Header />
-
-            {/* <main> */}
-              {children}
-              {/* </main> */}
-
-                <Footer />
-            
-          {/* </div> */}
-        </AuthProvider>
+        {children}
       </body>
     </html>
   )

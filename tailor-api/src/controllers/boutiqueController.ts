@@ -85,3 +85,23 @@ export const updateDailyOrderLimit = async (req: Request, res: Response) => {
   }
 };
 
+
+export const getActiveBoutique = async (req: Request, res: Response) => {
+  try {
+    const boutiqueId = (req as any).boutiqueId;
+
+    const boutique = await Boutique.findById(boutiqueId).select(
+      "_id name"
+    );
+
+    if (!boutique) {
+      return res.status(404).json({ message: "Boutique not found" });
+    }
+
+    res.json(boutique);
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+

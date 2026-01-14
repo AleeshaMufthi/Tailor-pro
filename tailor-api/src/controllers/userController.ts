@@ -33,12 +33,21 @@ export const updateProfile = async (req: Request, res: Response) => {
 
     const { fullName, phone, userPhoto } = req.body;
 
+    const updateData: any = {
+      fullName,
+      phone,
+    };
+
+    if (userPhoto) {
+      updateData.userPhoto = userPhoto;
+    }
+
     const user = await User.findByIdAndUpdate(
       userId,
-      { fullName, phone, userPhoto },
+      updateData,
       { new: true }
     ).select("-otp -otpExpires");
-
+    console.log("Updated user:", user);
     res.json({ message: "Profile updated", user });
   } catch {
     res.status(500).json({ message: "Profile update failed" });

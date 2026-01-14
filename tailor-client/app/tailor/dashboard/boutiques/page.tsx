@@ -8,6 +8,9 @@ export default function BoutiqueSettingsPage() {
   const { user, setUser } = useAuth();
   const [boutiques, setBoutiques] = useState<any[]>([]);
   const [dailyOrderLimit, setDailyOrderLimit] = useState<number>(15);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSaved, setIsSaved] = useState(true);
+
 
   const saveLimit = async () => {
   try {
@@ -21,19 +24,19 @@ export default function BoutiqueSettingsPage() {
   }
 };
 
-
   useEffect(() => {
     api.get("/api/boutique/my-boutiques").then(res => {
       setBoutiques(res.data);
       console.log(res.data, 'boutiques fetched');
     });
   }, []);
-  
+
 
   const switchBoutique = async (id: string) => {
     const res = await api.post("/api/boutique/switch", {
       boutiqueId: id,
     });
+    window.location.reload();
     setUser(res.data.user);
   };
 

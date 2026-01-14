@@ -7,7 +7,7 @@ const router = express.Router()
 
 router.get("/get-user", authMiddleware, requireBoutique, getUser);
 
-router.put("/profile", authMiddleware, requireBoutique, updateProfile);
+router.put("/profile", authMiddleware, updateProfile);
 
 router.get("/get-profile", authMiddleware, requireBoutique, getUserProfile);
 

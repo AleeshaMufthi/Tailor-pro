@@ -3,11 +3,35 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
+import { useState, useEffect } from "react";
+import api from "@/lib/axios";
 
 export default function Sidebar() {
+
   const pathname = usePathname();
 
-const { user, loading } = useAuth();
+  const { user, loading } = useAuth();
+
+  const [activeBoutique, setActiveBoutique] = useState<{
+  _id: string;
+  name: string;
+  } | null>(null);
+
+  useEffect(() => {
+  if (!user?.activeBoutique) return;
+
+  const fetchActiveBoutique = async () => {
+    try {
+      const res = await api.get("/api/boutique/active");
+      console.log(res, 'active boutique response');
+      console.log(res.data, 'active boutique fetched');
+      setActiveBoutique(res.data);
+    } catch {}
+  };
+
+  fetchActiveBoutique();
+}, [user?.activeBoutique]);
+
 
 if (loading) return <p>Loading...</p>;
 if (!user) return null;
@@ -32,9 +56,32 @@ const menuItems = [
     <aside className="w-64 bg-white shadow-lg min-h-screen p-12 flex flex-col">
       
       {/* LOGO */}
-      <div className="flex items-center gap-2 mb-20">
+      <div className="flex items-center gap-2 mb-10">
+
+        {/* ACTIVE BOUTIQUE */}
+<div className="mb-5 px-2">
+  <div className="flex items-center gap-3">
+    {/* Online Dot */}
+    <span className="relative flex h-4 w-4">
+      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+      <span className="relative inline-flex rounded-full h-4 w-4 bg-green-600"></span>
+    </span>
+
+    <div>
+      <p className="text-sm text-gray-500 font-semibold">
+        Active Boutique
+      </p>
+      <p className="text-xl font-bold text-gray-800 truncate max-w-[180px]">
+        {activeBoutique?.name ?? "—"}
+      </p>
+    </div>
+  </div>
+</div>
+
        
       </div>
+
+      
 
       {/* MENU */}
       <nav className="flex flex-col gap-3">
