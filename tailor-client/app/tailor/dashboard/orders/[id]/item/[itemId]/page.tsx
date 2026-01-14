@@ -241,7 +241,6 @@ const orderId = params.id as string;
       </div>
     )}
 
-    {/* Default Measurements */}
 {item.measurements?.defaults &&
   Object.keys(item.measurements.defaults).length > 0 && (
     <div>

@@ -15,6 +15,7 @@ import measurementRoutes from './routes/measurementRoutes'
 import staffRoutes from './routes/staffRoutes'
 import outfitRoutes from './routes/outfitRoutes'
 import boutiqueRoutes from './routes/boutiqueRoutes'
+import dashboardRoutes from './routes/dashboardRoutes'
 
 dotenv.config()
 connectDB();
@@ -60,6 +61,7 @@ app.use("/api/measurements", measurementRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/outfits", outfitRoutes);
 app.use("/api/boutique", boutiqueRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.use("/api/token", refreshRoute);
 app.use("/api/protected", protectedRoutes);

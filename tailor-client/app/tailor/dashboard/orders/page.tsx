@@ -1,4 +1,3 @@
-// dashboard/orders/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -195,7 +194,6 @@ const hasUpcomingItem = (order: any, today: Date) =>
     </div>
   </div>
 )}
-
 
     {/* Status badge */}
     <span
