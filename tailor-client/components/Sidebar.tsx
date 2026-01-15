@@ -45,6 +45,7 @@ const menuItems = [
   { name: "Customers", href: "/tailor/dashboard/customers" },
   { name: "Settings", href: "/tailor/dashboard/boutiques" },
   { name: "Smart Calendar", href: "/tailor/dashboard/calendar" },
+  { name: "Revenue", href: "/tailor/dashboard/revenue" },
   { name: "FAQs", href: "/tailor/dashboard/faq" },
   { name: "Privacy Policy", href: "/tailor/dashboard/policy" },
 ];
