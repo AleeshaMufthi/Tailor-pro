@@ -59,7 +59,7 @@ export default function OtpClient() {
 
       setAccessToken(res.data.accessToken)
 
-      if (!res.data.user.isProfileCompleted) {
+      if (!res.data.user.isProfileCompleted && res.data.user.role === "owner") {
 
         router.push("/complete-profile");
         

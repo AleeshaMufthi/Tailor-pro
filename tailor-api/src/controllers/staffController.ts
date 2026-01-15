@@ -7,18 +7,19 @@ export const addStaff = async (req: Request, res: Response) => {
     const ownerId = (req as any).user.userId;
 
     const boutiqueId = (req as any).user.activeBoutique;
+    console.log(boutiqueId)
 
     if (!boutiqueId) {
       return res.status(400).json({ message: "No active boutique selected" });
-   }
+    }
 
     const owner = await User.findById(ownerId);
-
     if (!owner || owner.role !== "owner") {
       return res.status(403).json({ message: "Forbidden" });
     }
 
-    const { email, name, phone } = req.body;
+    const email = req.body.email?.toLowerCase().trim();
+    const { name, phone } = req.body;
 
     if (!email) return res.status(400).json({ message: "Email required" });
 
@@ -27,19 +28,17 @@ export const addStaff = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    const tempPassword = Math.random().toString(36).slice(-8);
-
-    const hashedPassword = await bcrypt.hash(tempPassword, 10);
-
     const staff = await User.create({
       email,
+      name,
       phone,
       role: "staff",
-      password: hashedPassword,
       createdBy: ownerId,
       boutique: boutiqueId,
       isProfileCompleted: false,
     });
+
+    console.log("Created staff:", staff);
 
     res.json({
       message: "Staff created",
@@ -47,13 +46,13 @@ export const addStaff = async (req: Request, res: Response) => {
         id: staff._id,
         email: staff.email,
       },
-      tempPassword,
     });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 export const getStaff = async (req: Request, res: Response) => {
@@ -70,7 +69,7 @@ export const getStaff = async (req: Request, res: Response) => {
       role: "staff",
       boutique: boutiqueId,
       createdBy: ownerId, 
-    }).select("name email");
+    }).select("phone email");
 
     console.log("Fetched staff:", staff);
 

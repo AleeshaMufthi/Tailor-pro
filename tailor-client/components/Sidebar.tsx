@@ -39,13 +39,13 @@ const menuItems = [
     ? [
         { name: "Dashboard", href: "/tailor/dashboard" },
         { name: "Add Staff", href: "/tailor/dashboard/staff" },
+        { name: "Revenue", href: "/tailor/dashboard/revenue" },
+        { name: "Settings", href: "/tailor/dashboard/boutiques" },
       ]
     : []),
   { name: "Orders", href: "/tailor/dashboard/orders" },
   { name: "Customers", href: "/tailor/dashboard/customers" },
-  { name: "Settings", href: "/tailor/dashboard/boutiques" },
   { name: "Smart Calendar", href: "/tailor/dashboard/calendar" },
-  { name: "Revenue", href: "/tailor/dashboard/revenue" },
   { name: "FAQs", href: "/tailor/dashboard/faq" },
   { name: "Privacy Policy", href: "/tailor/dashboard/policy" },
 ];

@@ -10,37 +10,63 @@ import { sendEmail } from "../utils/emailService";
 // sendOtp
 export const sendOtp = async (req: Request, res: Response) => {
   try {
-    const rawEmail = req.body.email;
-    const email = rawEmail?.toLowerCase().trim();
-    if (!email) return res.status(400).json({ message: "Email is required" });
-
-    const otp = generateOTP();
-    console.log("Generated OTP:", otp);
-
-    const otpExpiry = new Date(Date.now() + 5 * 60 * 1000);
+    const email = req.body.email?.toLowerCase().trim();
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
 
     let user = await User.findOne({ email });
-    if (!user) user = await User.create({ email });
+
+    // 🔐 CASE 1: User does not exist
+    if (!user) {
+      // Check if any owner exists in system
+      const ownerExists = await User.exists({ role: "owner" });
+
+      if (ownerExists) {
+        // ❌ No auto-creation allowed once system is live
+        return res.status(404).json({
+          message: "No account found. Please contact the boutique owner.",
+        });
+      }
+
+      // ✅ FIRST OWNER BOOTSTRAP
+      user = await User.create({
+        email,
+        role: "owner",
+        isProfileCompleted: false,
+      });
+    }
+
+    // 🔐 CASE 2: Staff safety check
+    if (user.role === "staff" && !user.boutique) {
+      return res.status(403).json({
+        message: "Staff account is not assigned to a boutique",
+      });
+    }
+
+    // Generate OTP
+    const otp = generateOTP();
+    console.log(otp, "Generated OTP")
+    const otpExpiry = new Date(Date.now() + 5 * 60 * 1000);
 
     user.otp = otp;
     user.otpExpires = otpExpiry;
     await user.save();
 
-    // TODO: send email here via email service
     await sendEmail(email, "Your OTP", `Your OTP is ${otp}`);
 
-    return res.json({ message: "OTP sent successfully" });
+    return res.json({
+      message: "OTP sent successfully",
+    });
   } catch (error) {
     console.error("sendOtp error:", error);
     return res.status(500).json({ message: "Error sending OTP" });
   }
 };
 
-
 export const verifyOtp = async (req: Request, res: Response) => {
   
   try {
-    console.log('ivde vanno')
     const { email: rawEmail, otp: rawOtp } = req.body;
     const email = rawEmail?.toString().toLowerCase().trim();
     const otp = rawOtp?.toString().trim();

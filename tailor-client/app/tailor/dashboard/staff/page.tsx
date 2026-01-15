@@ -1,85 +1,104 @@
-'use client'
-import { useState, useEffect } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import api from "@/lib/axios";
 
-export default function AddStaffPage() {
+export default function StaffPage() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-
   const [staffList, setStaffList] = useState<any[]>([]);
-const [lastCreatedPassword, setLastCreatedPassword] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    fetchStaff();
+  }, []);
 
-useEffect(() => {
-  fetchStaff();
-}, []);
+  const fetchStaff = async () => {
+    try {
+      const res = await api.get("/api/staff/get");
+      setStaffList(res.data.staff || []);
+    } catch (err) {
+      console.error("Failed to fetch staff");
+    }
+  };
 
-const fetchStaff = async () => {
-  const res = await api.get("/api/staff");
-  setStaffList(res.data.staff);
-};
+  const handleAddStaff = async () => {
+    if (!email) return alert("Email required");
 
-
-const handleSubmit = async () => {
-  if (!email) return alert("Email required");
-
-  try {
-    const res = await api.post("/api/staff/add", { email, name, phone });
-
-    setLastCreatedPassword(res.data.tempPassword);
-    setEmail("");
-    setName("");
-    setPhone("");
-
-    fetchStaff(); // ✅ refresh list
-  } catch (err: any) {
-    alert(err.response?.data?.message || "Failed to create staff");
-  }
-};
-
-
+    try {
+      setLoading(true);
+      await api.post("/api/staff/add", { email, name, phone });
+      setEmail("");
+      setName("");
+      setPhone("");
+      fetchStaff();
+    } catch (err: any) {
+      alert(err.response?.data?.message || "Failed to add staff");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <>
-    <div className="p-6 max-w-md mx-auto bg-white rounded shadow space-y-4">
-      <h2 className="text-xl font-bold">Add Staff / Tailor</h2>
-      <input type="text" placeholder="Name" className="border p-2 w-full" value={name} onChange={e => setName(e.target.value)} />
-      <input type="email" placeholder="Email" className="border p-2 w-full" value={email} onChange={e => setEmail(e.target.value)} />
-      <input type="text" placeholder="Phone" className="border p-2 w-full" value={phone} onChange={e => setPhone(e.target.value)} />
-      <button onClick={handleSubmit} className="bg-emerald-600 text-white px-4 py-2 rounded">Add Staff</button>
+    <div className="max-w-3xl mx-auto p-6 space-y-6">
+      <div className="bg-white p-4 rounded shadow space-y-3">
+        <h2 className="text-xl font-bold">Add Staff</h2>
+
+        <input
+          className="border p-2 w-full"
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+
+        <input
+          className="border p-2 w-full"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <input
+          className="border p-2 w-full"
+          placeholder="Phone"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+        />
+
+        <button
+          onClick={handleAddStaff}
+          disabled={loading}
+          className="bg-emerald-600 text-white px-4 py-2 rounded"
+        >
+          {loading ? "Adding..." : "Add Staff"}
+        </button>
+      </div>
+
+      <div className="bg-white p-4 rounded shadow">
+        <h3 className="font-semibold mb-3">Staff Members</h3>
+
+        {staffList.length === 0 ? (
+          <p className="text-gray-500">No staff added yet</p>
+        ) : (
+          <table className="w-full border">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="p-2 text-left">Email</th>
+                <th className="p-2 text-left">Phone</th>
+              </tr>
+            </thead>
+            <tbody>
+              {staffList.map((s) => (
+                <tr key={s._id} className="border-t">
+                  <td className="p-2">{s.email}</td>
+                  <td className="p-2">{s.phone || "-"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
-    {lastCreatedPassword && (
-  <div className="bg-yellow-100 border border-yellow-300 p-3 rounded mb-4">
-    <p className="font-semibold">Temporary Password</p>
-    <p className="text-lg font-mono">{lastCreatedPassword}</p>
-    <p className="text-xs text-gray-600">
-      Share this with the staff. They should change it after login.
-    </p>
-  </div>
-)}
-
-{/* <div className="mt-6">
-  <h2 className="text-lg font-semibold mb-2">Staff Members</h2>
-
-  <table className="w-full border rounded">
-    <thead className="bg-gray-100">
-      <tr>
-        <th className="text-left p-2">Name</th>
-        <th className="text-left p-2">Email</th>
-      </tr>
-    </thead>
-    <tbody>
-      {staffList.map((staff) => (
-        <tr key={staff._id} className="border-t">
-          <td className="p-2">{staff.name}</td>
-          <td className="p-2">{staff.email}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div> */}
-
-</>
   );
 }

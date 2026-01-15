@@ -5,7 +5,7 @@ import { requireBoutique } from "../middleware/boutiqueMiddleware";
 
 const router = express.Router();
 
-router.post("/add", authMiddleware, requireBoutique, addStaff);
-router.get("/get", authMiddleware, requireBoutique, getStaff);
+router.post("/add", authMiddleware, addStaff);
+router.get("/get", authMiddleware, getStaff);
 
 export default router;
