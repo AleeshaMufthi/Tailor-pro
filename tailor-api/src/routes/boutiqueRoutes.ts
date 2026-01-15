@@ -11,6 +11,6 @@ router.get("/my-boutiques", authMiddleware, requireBoutique, getMyBoutiques);
 
 router.put("/update-daily-limit", authMiddleware, requireBoutique, updateDailyOrderLimit);
 
-router.get("/active", authMiddleware, requireBoutique, getActiveBoutique);
+router.get("/active", authMiddleware, getActiveBoutique);
 
 export default router;

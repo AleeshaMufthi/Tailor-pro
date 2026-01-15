@@ -17,8 +17,16 @@ export default function Sidebar() {
   name: string;
   } | null>(null);
 
+  const getBoutiqueId = (user: any) => {
+  if (!user) return null
+  if (user.role === "owner") return user.activeBoutique
+  if (user.role === "staff") return user.boutique
+  return null
+}
+
   useEffect(() => {
-  if (!user?.activeBoutique) return;
+
+  getBoutiqueId(user);
 
   const fetchActiveBoutique = async () => {
     try {
@@ -75,10 +83,8 @@ const menuItems = [
       </p>
     </div>
   </div>
+</div> 
 </div>
-
-       
-      </div>
 
       
 

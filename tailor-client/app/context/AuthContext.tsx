@@ -19,6 +19,8 @@ type User = {
 
   activeBoutique?: string;        // _id of currently active boutique
   boutiques?: string[];           // list of boutique _ids the owner has
+
+  boutique?: string
 }
 
 type AuthContextType = {

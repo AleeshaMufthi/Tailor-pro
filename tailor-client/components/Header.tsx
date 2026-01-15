@@ -93,7 +93,7 @@ useEffect(() => setMounted(true), []);
                 transition-all duration-200 ease-out
                 hover:-translate-y-1 hover:scale-[1.03] hover:shadow-xl shadow-emerald-700"
               >
-                {user.fullName}
+                {user.fullName || user.email}
                 <ChevronRight
                   size={16}
                   className={`transition-transform duration-200 ${

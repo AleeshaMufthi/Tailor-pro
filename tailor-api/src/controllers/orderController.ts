@@ -125,11 +125,20 @@ for (const date of uniqueDeliveryDates) {
 // Get All Orders
 export const getAllOrders = async (req: Request, res: Response) => {
   try {
-    const boutiqueId = (req as any).boutiqueId;
-    if (!boutiqueId) {
-      return res.status(400).json({ message: "Active boutique not found" });
+    const user = (req as any).user;
+        let boutiqueId;
+
+    if (user.role === "owner") {
+      boutiqueId = user.activeBoutique;
     }
-    console.log("Fetching all orders...")
+
+    if (user.role === "staff") {
+      boutiqueId = user.boutique;
+    }
+
+    if (!boutiqueId) {
+      return res.status(400).json({ message: "No boutique found" });
+    }
     const orders = await Order.find({ boutique: boutiqueId, isArchived: false, })
       .populate("customer")
       .populate({

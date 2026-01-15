@@ -88,19 +88,37 @@ export const updateDailyOrderLimit = async (req: Request, res: Response) => {
 
 export const getActiveBoutique = async (req: Request, res: Response) => {
   try {
-    const boutiqueId = (req as any).boutiqueId;
+    console.log("getActiveBoutique called");
+    const user = (req as any).user;
 
-    const boutique = await Boutique.findById(boutiqueId).select(
-      "_id name"
-    );
+    console.log("getActiveBoutique called for user:", user);
+
+    let boutiqueId;
+
+    // OWNER
+    if (user.role === "owner") {
+      boutiqueId = user.activeBoutique;
+    }
+
+    // STAFF
+    if (user.role === "staff") {
+      boutiqueId = user.boutique;
+    }
+
+    if (!boutiqueId) {
+      return res.status(400).json({ message: "No boutique found" });
+    }
+
+    const boutique = await Boutique.findById(boutiqueId).select("name");
 
     if (!boutique) {
       return res.status(404).json({ message: "Boutique not found" });
     }
 
     res.json(boutique);
-  } catch (err: any) {
-    res.status(500).json({ message: err.message });
+  } catch (error) {
+    console.error("getActiveBoutique error:", error);
+    res.status(500).json({ message: "Failed to fetch boutique" });
   }
 };
 

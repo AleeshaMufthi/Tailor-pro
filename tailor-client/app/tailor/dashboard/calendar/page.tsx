@@ -34,26 +34,23 @@ export default function CalendarPage() {
 
   /* -------------------- Fetch Orders -------------------- */
 
-  useEffect(() => {
-    if (!activeBoutique) return;
+useEffect(() => {
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/api/orders/all");
+      setOrders(res.data.orders || []);
+    } catch (err) {
+      console.error("Failed to fetch calendar orders", err);
+      setOrders([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const fetchOrders = async () => {
-      try {
-        setLoading(true);
-        const res = await api.get("/api/orders/all", {
-          params: { boutiqueId: activeBoutique },
-        });
-        setOrders(res.data.orders || []);
-      } catch (err) {
-        console.error("Failed to fetch calendar orders", err);
-        setOrders([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  fetchOrders();
+}, []);
 
-    fetchOrders();
-  }, [activeBoutique]);
 
   /* -------------------- Build Calendar Data -------------------- */
 
