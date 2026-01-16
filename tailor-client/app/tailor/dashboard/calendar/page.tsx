@@ -24,6 +24,8 @@ export default function CalendarPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [dailyOrderLimit, setDailyOrderLimit] = useState<number | null>(null);
+
   const START_MONTH = new Date(2026, 0); 
 
   const [currentMonth, setCurrentMonth] = useState(new Date(2026, 0));
@@ -50,6 +52,12 @@ useEffect(() => {
 
   fetchOrders();
 }, []);
+
+    useEffect(() => {
+      api.get("/api/boutique/daily-limit").then((res) => {
+      setDailyOrderLimit(res.data?.dailyOrderLimit ?? null);
+    });
+  }, []);
 
 
   /* -------------------- Build Calendar Data -------------------- */
@@ -116,7 +124,7 @@ const goNextMonth = () => {
 
         <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-200 rounded-lg p-4">
           <span className="text-emerald-700 font-semibold">
-            Maximum {MAX_ORDERS} orders can be taken per day
+            Maximum {dailyOrderLimit || MAX_ORDERS} orders can be taken per day
           </span>
         </div>
       </div>

@@ -29,8 +29,6 @@ export default function BoutiqueSettingsPage() {
     });
   }, []);
 
-  console.log(dailyOrderLimit, 'daily order limit')
-
   const saveLimit = async () => {
     try {
       setIsSaving(true);
