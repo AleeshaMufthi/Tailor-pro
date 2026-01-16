@@ -33,6 +33,8 @@ export default function ProfilePage() {
       });
     }
   }, [user]);
+  console.log({user}, 'user')
+  console.log(user?.userPhoto, 'user.userphoto')
 
   useEffect(() => {
       api.get("/api/boutique/my-boutiques").then(res => {
@@ -40,15 +42,18 @@ export default function ProfilePage() {
       });
     }, []);
 
-    const profileImage = isEditing
-  ? preview || form.userPhoto
-  : user?.userPhoto;
+    const profileImage = preview || user?.userPhoto || "/default.png";
+
+
+  console.log(profileImage, 'profile image')
 
 
   const handleSubmit = async () => {
     setLoading(true);
     try {
       let photoUrl = form.userPhoto;
+
+      console.log('photo url', photoUrl)
 
       if (photoFile) {
         photoUrl = await uploadToCloudinary(photoFile);
@@ -59,8 +64,15 @@ export default function ProfilePage() {
         phone: form.phone,
         userPhoto: photoUrl,
       });
+
+      const profile = res.data.user.userPhoto
       console.log("Profile update response:", res);
       setUser(res.data.user);
+      setForm({
+        fullName: res.data.user.fullName,
+        phone: res.data.user.phone,
+        userPhoto: res.data.user.userPhoto || "",
+    });
       setIsEditing(false);
       setPreview(null);
       setPhotoFile(null);
@@ -71,9 +83,8 @@ export default function ProfilePage() {
     }
   };
 
-  return (
+return (
 <div className="max-w-3xl mx-auto mt-12 space-y-8">
-
   <Link
     href="/tailor/dashboard"
     className="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm"
@@ -87,7 +98,9 @@ export default function ProfilePage() {
     <div className="flex items-center gap-6 mb-8">
       <div className="relative">
         <img
-          src={profileImage || "/default.png"}
+        key={profileImage}
+          src={profileImage}
+          alt="Profile"
           className="h-28 w-28 rounded-full object-cover border"
         />
         
@@ -108,7 +121,7 @@ export default function ProfilePage() {
 )}
 </div>
 
-      <div>
+      <div className="font-semibold">
         <h1 className="text-2xl font-bold text-gray-800">
           {form.fullName || "Your Name"}
         </h1>
@@ -120,12 +133,12 @@ export default function ProfilePage() {
 
     {/* Form */}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
+      <div className="font-semibold">
         <label className="text-sm font-semibold text-gray-600 mb-1 block">
           Full Name
         </label>
         <input
-          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
+          className="w-full p-3 border rounded-lg"
           value={form.fullName}
           onChange={(e) =>
             setForm({ ...form, fullName: e.target.value })
@@ -133,7 +146,7 @@ export default function ProfilePage() {
         />
       </div>
 
-      <div>
+      <div className="font-semibold">
         <label className="text-sm font-semibold text-gray-600 mb-1 block">
           Phone Number
         </label>
@@ -167,11 +180,11 @@ export default function ProfilePage() {
 
   {/* ACCOUNT DETAILS */}
   <div className="bg-white rounded-2xl shadow-sm p-8">
-    <h2 className="text-xl font-bold text-gray-800 mb-4">
+    <h2 className="text-xl font-bold text-gray-800 mb-3">
       Account Information
     </h2>
 
-    <div className="space-y-2 text-gray-700">
+    <div className="space-y-2 text-gray-700 font-semibold">
       <p>
         <strong>Email:</strong> {user?.email}
       </p>

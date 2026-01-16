@@ -57,7 +57,7 @@ useEffect(() => {
   fetchUser();
 }, []);
 
-  const logout = async () => {
+const logout = async () => {
     try {
       await api.post("/api/auth/logout", {}, { withCredentials: true })
     } catch (err) {

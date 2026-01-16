@@ -20,6 +20,7 @@ export const getUser = async (req: Request, res: Response) => {
         role: user.role,
         boutiques: user.boutiques?.map(b => b.toString()) || [], 
         activeBoutique: user.activeBoutique?.toString() || null,  
+        userPhoto : user.userPhoto,
       },
     });
   } catch (err) {
