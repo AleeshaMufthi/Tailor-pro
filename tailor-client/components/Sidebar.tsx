@@ -46,7 +46,7 @@ const menuItems = [
   ...(user.role === "owner"
     ? [
         { name: "Dashboard", href: "/tailor/dashboard" },
-        { name: "Add Staff", href: "/tailor/dashboard/staff" },
+        { name: "Staffs", href: "/tailor/dashboard/staff" },
         { name: "Revenue", href: "/tailor/dashboard/revenue" },
         { name: "Settings", href: "/tailor/dashboard/boutiques" },
       ]

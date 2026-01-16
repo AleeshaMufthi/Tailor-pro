@@ -26,12 +26,18 @@ export const authMiddleware = async ( req: Request, res: Response, next: NextFun
     }
 
     const user = await User.findById(decoded.userId).select(
-      "role activeBoutique boutique boutiques"
+      "role activeBoutique boutique boutiques isActive"
     );  
+
+    console.log(user.isActive, 'user cative ano?')
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     };
+
+    if (user.isActive === false) {
+    return res.status(403).json({ message: "Account disabled" });
+    }
 
     // ✅ FULL user context (IMPORTANT)
     (req as any).user = {

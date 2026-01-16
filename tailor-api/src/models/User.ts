@@ -17,6 +17,7 @@ export interface IUser extends Document {
   otp?: string;
   otpExpires?: Date;
   isProfileCompleted: boolean;
+  isActive: boolean; 
 }
 
 const userSchema = new Schema<IUser>(
@@ -63,6 +64,11 @@ const userSchema = new Schema<IUser>(
     otpExpires: Date,
 
     isProfileCompleted: { type: Boolean, default: false },
+
+    isActive: {
+    type: Boolean,
+    default: true,
+}
   },
   { timestamps: true }
 );

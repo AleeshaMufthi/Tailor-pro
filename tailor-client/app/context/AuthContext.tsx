@@ -44,8 +44,12 @@ useEffect(() => {
         withCredentials: true,
       });
       setUser(res.data.user);
-    } catch {
+    } catch (err: any) {
       setUser(null);
+      if (err.response?.status === 401) {
+      alert("Your account has been deactivated. Please contact the owner.");
+      window.location.href = "/auth";
+    }
     } finally {
       setLoading(false);
     }
