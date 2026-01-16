@@ -191,36 +191,44 @@ return (
       <p>
         <strong>Role:</strong> {user?.role}
       </p>
-      <p>
-        <strong>Boutiques Owned:</strong>{" "}
-        {user?.boutiques?.length || 0}
-      </p>
+
+{user?.role === "owner" && (
+  <>
+    <p>
+      <strong>Boutiques Owned:</strong>{" "}
+      {user?.boutiques?.length || 0}
+    </p>
+
+    {/* BOUTIQUES */}
+    <div className="bg-white rounded-2xl shadow-sm p-8">
+      <h2 className="text-xl font-bold text-gray-800 mb-4">
+        Boutiques
+      </h2>
+
+      {boutiques.length > 0 ? (
+        <ul className="space-y-2">
+          {boutiques.map((b) => (
+            <li
+              key={b._id}
+              className="px-4 py-3 rounded-lg border bg-gray-50 text-gray-800 font-medium"
+            >
+              <Link
+                className="text-gray-800 font-medium hover:underline"
+                href={`/tailor/dashboard/boutiques`}
+              >
+                {b.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-500">No boutiques found.</p>
+      )}
     </div>
-  </div>
+  </>
+)}
 
-  {/* BOUTIQUES */}
-  <div className="bg-white rounded-2xl shadow-sm p-8">
-    <h2 className="text-xl font-bold text-gray-800 mb-4">
-      Boutiques
-    </h2>
-
-    {boutiques.length > 0 ? (
-      <ul className="space-y-2">
-        {boutiques.map((b) => (
-          <li
-            key={b._id}
-            className="px-4 py-3 rounded-lg border bg-gray-50 text-gray-800 font-medium"
-          >
-            <Link className="text-gray-800 font-medium hover:underline" href={`/tailor/dashboard/boutiques`}>
-              {b.name}
-            </Link>
-            {/* {b.name} */}
-          </li>
-        ))}
-      </ul>
-    ) : (
-      <p className="text-gray-500">No boutiques found.</p>
-    )}
+    </div>
   </div>
 
 </div>

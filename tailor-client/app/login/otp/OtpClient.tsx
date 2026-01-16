@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import api, { setAccessToken } from "@/lib/axios";
 
 export default function OtpClient() {
-     const searchParams = useSearchParams();
+  const searchParams = useSearchParams();
   const router = useRouter();
  
  const [email, setEmail] = useState("");
@@ -86,8 +86,8 @@ export default function OtpClient() {
     setLoading(false);
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+return (
+<div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
   <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6 sm:p-8 text-center">
 
     {/* Heading */}
