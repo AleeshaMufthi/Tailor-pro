@@ -578,8 +578,9 @@ export default function OrderDetailsPage() {
               Delivery Limit Reached
             </h3>
             <p className="text-md font-semibold text-gray-700">
-              There are already {dailyOrderCount} orders scheduled for this
-              date. You can either continue or choose another date.
+              Maximum <span className="text-red-600 text-lg font-bold">{orderLimit}</span> orders allowed per day. There are already {dailyOrderCount} orders scheduled for this
+              date. 
+              <br /> You can either continue or choose another date.
             </p>
             <div className="flex justify-end gap-3">
               <button

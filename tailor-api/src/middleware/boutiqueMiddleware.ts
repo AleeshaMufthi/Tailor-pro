@@ -7,7 +7,6 @@ export const requireBoutique = async (
   next: NextFunction
 ) => {
   try {
-    console.log("🔍 requireBoutique middleware called");
     if (!(req as any).user) {
       return res.status(401).json({ message: "Unauthorized" });
     }

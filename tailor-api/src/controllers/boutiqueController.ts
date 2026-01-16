@@ -60,9 +60,36 @@ export const getMyBoutiques = async (req: Request, res: Response) => {
   }
 };
 
+//  Order limit per boutique. 
+// export const updateDailyOrderLimit = async (req: Request, res: Response) => {
+//   try {
+//     const { dailyOrderLimit } = req.body;
+
+//     if (!dailyOrderLimit || dailyOrderLimit < 1) {
+//       return res.status(400).json({
+//         message: "Daily order limit must be greater than 0",
+//       });
+//     }
+
+//     const boutique = await Boutique.findByIdAndUpdate(
+//       (req as any).boutiqueId,
+//       { dailyOrderLimit },
+//       { new: true }
+//     );
+
+//     res.json({
+//       message: "Daily order limit updated",
+//       dailyOrderLimit: boutique?.dailyOrderLimit,
+//     });
+//   } catch (err: any) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
 export const updateDailyOrderLimit = async (req: Request, res: Response) => {
   try {
     const { dailyOrderLimit } = req.body;
+    const user = (req as any).user;
 
     if (!dailyOrderLimit || dailyOrderLimit < 1) {
       return res.status(400).json({
@@ -70,20 +97,20 @@ export const updateDailyOrderLimit = async (req: Request, res: Response) => {
       });
     }
 
-    const boutique = await Boutique.findByIdAndUpdate(
-      (req as any).boutiqueId,
-      { dailyOrderLimit },
-      { new: true }
+    await Boutique.updateMany(
+      { _id: { $in: user.boutiques } },
+      { $set: { dailyOrderLimit } }
     );
 
     res.json({
-      message: "Daily order limit updated",
-      dailyOrderLimit: boutique?.dailyOrderLimit,
+      message: "Daily order limit updated for all boutiques",
+      dailyOrderLimit,
     });
   } catch (err: any) {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 
 export const getActiveBoutique = async (req: Request, res: Response) => {
@@ -119,6 +146,22 @@ export const getActiveBoutique = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("getActiveBoutique error:", error);
     res.status(500).json({ message: "Failed to fetch boutique" });
+  }
+};
+
+export const getDailyOrderLimit = async (req: Request, res: Response) => {
+  try {
+    const boutique = await Boutique.findById((req as any).boutiqueId);
+
+    if (!boutique) {
+      return res.status(404).json({ message: "Boutique not found" });
+    }
+
+    res.json({
+      dailyOrderLimit: boutique.dailyOrderLimit ?? null,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch daily order limit" });
   }
 };
 

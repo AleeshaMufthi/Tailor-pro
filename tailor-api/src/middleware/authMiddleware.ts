@@ -29,8 +29,6 @@ export const authMiddleware = async ( req: Request, res: Response, next: NextFun
       "role activeBoutique boutique boutiques isActive"
     );  
 
-    console.log(user.isActive, 'user cative ano?')
-
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     };
