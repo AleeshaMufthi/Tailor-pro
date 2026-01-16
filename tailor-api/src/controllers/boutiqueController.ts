@@ -115,10 +115,7 @@ export const updateDailyOrderLimit = async (req: Request, res: Response) => {
 
 export const getActiveBoutique = async (req: Request, res: Response) => {
   try {
-    console.log("getActiveBoutique called");
     const user = (req as any).user;
-
-    console.log("getActiveBoutique called for user:", user);
 
     let boutiqueId;
 

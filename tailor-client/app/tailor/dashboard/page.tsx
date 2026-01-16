@@ -10,6 +10,7 @@ import {
   Users,
   Clock,
   AlertTriangle,
+  CheckCircle2
 } from "lucide-react";
 
 import {
@@ -22,6 +23,47 @@ import {
 } from "recharts";
 
 /* ----------------------------- Helpers ----------------------------- */
+
+const STAT_COLORS: Record<
+  string,
+  {
+    text: string;
+    bg: string;
+    border: string;
+  }
+> = {
+  green: {
+    text: "text-emerald-600",
+    bg: "bg-emerald-50",
+    border: "border-emerald-300",
+  },
+  blue: {
+    text: "text-blue-600",
+    bg: "bg-blue-50",
+    border: "border-blue-300",
+  },
+  yellow: {
+    text: "text-yellow-600",
+    bg: "bg-yellow-50",
+    border: "border-yellow-300",
+  },
+  orange: {
+    text: "text-orange-600",
+    bg: "bg-orange-50",
+    border: "border-orange-300",
+  },
+  purple: {
+    text: "text-purple-600",
+    bg: "bg-purple-50",
+    border: "border-purple-300",
+  },
+  red: {
+    text: "text-red-600",
+    bg: "bg-red-50",
+    border: "border-red-400",
+  },
+};
+
 
 const getItemDates = (order: any) =>
   (order.items || [])
@@ -73,10 +115,19 @@ export default function Dashboard() {
 
   const totalOrders = orders.length;
 
-  const totalRevenue = orders.reduce(
-    (sum, o) => sum + (o.totalAmount || 0),
-    0
-  );
+const deliveredOrders = orders.filter(
+  (o) =>
+    o.status === "delivered" &&
+    (o.balanceDue === 0 || o.balanceDue === undefined)
+);
+
+const totalRevenue = deliveredOrders.reduce(
+  (sum, o) => sum + (o.totalAmount || 0),
+  0
+);
+
+const totalDeliveries = deliveredOrders.length
+
 
   const totalCustomers = new Set(
     orders.map((o) => o.customer?._id).filter(Boolean)
@@ -93,19 +144,26 @@ export default function Dashboard() {
   /* ----------------------------- Stats Cards ----------------------------- */
 
   const stats = [
-    { title: "Total Orders", value: totalOrders, icon: ShoppingBag },
+    { title: "Total Orders", value: totalOrders, icon: ShoppingBag, color: "green" },
     {
       title: "Total Revenue",
       value: `₹${totalRevenue.toLocaleString()}`,
       icon: TrendingUp,
+      color: "yellow",
     },
-    { title: "Total Customers", value: totalCustomers, icon: Users },
-    { title: "Upcoming Deliveries", value: upcomingOrders, icon: Clock },
+    { title: "Total Customers", value: totalCustomers, icon: Users, color: "blue" },
+    { title: "Upcoming Orders", value: upcomingOrders, icon: Clock, color: "purple" },
+    {
+      title: "Delivered Orders",
+      value: totalDeliveries,
+      icon: CheckCircle2,
+      color: "orange"
+    },
     {
       title: "Overdue Orders",
       value: overdueOrders,
       icon: AlertTriangle,
-      danger: overdueOrders > 0,
+      color: "red"
     },
   ];
 
@@ -146,26 +204,31 @@ export default function Dashboard() {
       </h1>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {stats.map((stat) => (
-          <div
-            key={stat.title}
-            className={`rounded-2xl bg-white p-5 shadow border flex items-center gap-4 ${
-              stat.danger ? "border-red-300" : "border-gray-200"
-            }`}
-          >
-            <stat.icon
-              className={`h-8 w-8 ${
-                stat.danger ? "text-red-500" : "text-emerald-600"
-              }`}
-            />
-            <div>
-              <p className="text-sm text-gray-500">{stat.title}</p>
-              <p className="text-xl font-semibold">{stat.value}</p>
-            </div>
-          </div>
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+  {stats.map((stat) => {
+    const color = STAT_COLORS[stat.color || "green"];
+
+    return (
+      <div
+        key={stat.title}
+        className={`rounded-2xl p-4 shadow border-2 flex items-center gap-4
+          ${color.bg} ${color.border}`}
+      >
+        <stat.icon className={`h-10 w-10 ${color.text}`} />
+
+        <div>
+          <p className="text-sm font-semibold text-gray-600">
+            {stat.title}
+          </p>
+          <p className="text-xl font-bold mt-2">
+            {stat.value}
+          </p>
+        </div>
       </div>
+    );
+  })}
+</div>
+
 
       {/* Chart + Upcoming */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
