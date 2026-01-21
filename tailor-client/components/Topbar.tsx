@@ -10,7 +10,7 @@ export default function Topbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="w-full bg-white shadow-md px-6 py-6 flex items-center justify-end relative">
+    <header className="no-print w-full bg-white shadow-md px-6 py-6 flex items-center justify-end relative">
 
       {/* USER DROPDOWN */}
       <div className="relative">

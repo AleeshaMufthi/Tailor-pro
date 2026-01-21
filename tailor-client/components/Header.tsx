@@ -21,10 +21,10 @@ useEffect(() => setMounted(true), []);
   return (
     <header
       className={clsx(
-        'bg-transparent backdrop-blur left-0 w-full z-50 transition-all duration-300',
+        'no-print bg-transparent backdrop-blur left-0 w-full z-50 transition-all duration-300',
         isLoggedIn
-          ? 'bg-white shadow-sm backdrop-blur top-0 left-0 w-full z-50'
-          : 'bg-transparent backdrop-blur top-2 md:top-3 lg:top-5'
+          ? 'no-print bg-white shadow-sm backdrop-blur top-0 left-0 w-full z-50'
+          : 'no-print bg-transparent backdrop-blur top-2 md:top-3 lg:top-5'
       )}
     >
       <div className="w-full flex items-center justify-between h-28 px-2 md:px-8 lg:px-10">

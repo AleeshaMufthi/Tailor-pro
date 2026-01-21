@@ -62,6 +62,7 @@ export const DEFAULT_MEASUREMENT_CONFIG: Record<
     image: "/measurements/ankle.jpg",
   },
 };
+
 export default function OrderDetailsPage() {
 
 const params = useParams();
@@ -208,7 +209,7 @@ const orderId = params.id as string;
               </p>
             )}
 
-            {/* Measurements */}
+{/* Measurements */}
 {item.measurements && (
   <div className="space-y-4">
     <h3 className="font-semibold text-lg">Measurements</h3>
@@ -224,9 +225,9 @@ const orderId = params.id as string;
               key={idx}
               className="border rounded-lg p-3 shadow-sm space-y-2"
             >
-              <p>
-                <strong>{m.name}</strong>: {m.size}
-              </p>
+            <p>
+              <strong>{m.name}</strong>: {m.size}
+            </p>
 
               {m.imageUrl && (
                 <img

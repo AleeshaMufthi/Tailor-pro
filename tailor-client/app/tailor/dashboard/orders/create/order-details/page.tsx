@@ -3,6 +3,7 @@ import { useOrder } from "@/app/context/OrderContext";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { uploadToCloudinary } from "@/lib/cloudinary";
+import AudioRecorder from "@/components/AudioRecorder";
 import api from "@/lib/axios";
 import Link from "next/link";
 import { ChevronLeft, Trash2 } from "lucide-react";
@@ -88,6 +89,9 @@ export default function OrderDetailsPage() {
   const [showStitchOptions, setShowStitchOptions] = useState(false);
   const [activeOutfitIndex, setActiveOutfitIndex] = useState(0);
   const [prevOutfitIndex, setPrevOutfitIndex] = useState(0);
+
+  const [uploadingaudio, setUploadingAudio] = useState(false);
+
   const activeOutfit = orderData.outfits?.[activeOutfitIndex];
 
   const [form, setForm] = useState({
@@ -190,6 +194,28 @@ export default function OrderDetailsPage() {
       setCustomMeasurements([]);
     }
   }, [activeOutfitIndex, orderData.outfits]);
+
+
+const handleAudioRecorded = async (file: File) => {
+  setUploadingAudio(true);
+  try {
+    const url = await uploadToCloudinary(file);
+    setOrderData((prev: any) => {
+      const outfits = [...prev.outfits];
+      outfits[activeOutfitIndex] = {
+        ...outfits[activeOutfitIndex],
+        audioUrl: url, // ✅ SAVE INTO OUTFIT
+      };
+      return { ...prev, outfits };
+    });
+  } catch (err) {
+    console.error("Audio upload failed", err);
+  } finally {
+    setUploadingAudio(false);
+  }
+};
+
+
 
   const handleDeliveryDateChange = async (date: string) => {
     console.log("Selected delivery date:", date);
@@ -464,6 +490,28 @@ export default function OrderDetailsPage() {
             }
           />
         </div>
+
+        <AudioRecorder onRecorded={handleAudioRecorded} />
+
+{uploadingaudio && ( <p className="text-sm text-gray-500">Uploading audio...</p> )}
+
+{activeOutfit.audioUrl && (
+  <audio controls className="mt-2 w-full">
+    <source src={activeOutfit.audioUrl} />
+  </audio>
+  
+)}
+{activeOutfit.audioUrl && (
+  <button
+    onClick={() =>
+      updateOutfit("audioUrl", undefined)
+    }
+    className="text-red-600 text-sm mt-1"
+  >
+    Remove audio
+  </button>
+)}
+
       </div>
 
       <h3 className="font-semibold text-md text-gray-600 mt-4">

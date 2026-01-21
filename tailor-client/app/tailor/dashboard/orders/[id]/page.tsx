@@ -6,9 +6,15 @@ import api from "@/lib/axios";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 
+import { useRef } from "react";
+import html2pdf from "html2pdf.js";
+
+
 export default function OrderDetails() {
   // const { id } = useParams();
   const params = useParams<{ id: string }>();
+  const invoiceRef = useRef<HTMLDivElement>(null);
+
 
 if (!params) {
   // handle null case, e.g., show loading or error
@@ -60,16 +66,56 @@ const id = params.id;
     fetchOrder();
   };
 
+  const handlePrint = () => {
+  window.print();
+};
+
+const handleDownloadPDF = () => {
+  if (!invoiceRef.current) return;
+
+  html2pdf()
+    .set({
+      margin: 10,
+      filename: `Invoice-${order.orderNumber}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    })
+    .from(invoiceRef.current)
+    .save();
+};
+
+
   if (!order) return <p>Loading...</p>;
 
   return (
     <div className="p-6 space-y-6">
-      <Link href="/tailor/dashboard/orders" className="flex items-center gap-1 text-gray-600">
+      <Link href="/tailor/dashboard/orders" className="no-print flex items-center gap-1 text-gray-600">
         <ChevronLeft size={20} />
         Back to Orders
       </Link>
 
-      <div className="bg-white p-6 border rounded-lg shadow space-y-4">
+<div className="no-print flex gap-3 justify-end">
+  <button
+    onClick={handlePrint}
+    className="border font-semibold border-blue-500 text-blue-500 px-4 py-2 rounded-full hover:bg-blue-200"
+  >
+    🖨 Print
+  </button>
+
+  <button
+    onClick={handleDownloadPDF}
+    className="bg-blue-500 text-white px-4 py-2 font-semibold rounded-full hover:bg-blue-900"
+  >
+    ⬇ Download PDF
+  </button>
+</div>
+
+      <div
+      ref={invoiceRef} 
+      className="bg-white p-6 border rounded-lg shadow space-y-4">
+
+        
         <h1 className="text-2xl font-bold">Invoice</h1>
 
         <p><b>Order No:</b> {order.orderNumber}</p>
@@ -77,7 +123,6 @@ const id = params.id;
 
         {/* OUTFITS */}
         <div className="space-y-3">
-          <h2 className="font-semibold">Outfit Breakdown</h2>
 
           {order.items.map((item: any) => {
             const total =
@@ -98,7 +143,7 @@ const id = params.id;
         </div>
 
         {/* ADD EXTRA CHARGE */}
-        <div className="border-t pt-4 space-y-2">
+        <div className="no-print border-t pt-4 space-y-2">
           <h3 className="font-semibold">Additional Charges</h3>
 
           <input
@@ -132,7 +177,6 @@ const id = params.id;
   </div>
 ))}
 
-
         {/* PAYMENT SUMMARY */}
         <div className="border-t pt-4 space-y-1">
           <p className="font-semibold text-lg">Total Amount: ₹{order.totalAmount}</p>
@@ -143,7 +187,7 @@ const id = params.id;
         </div>
 
         {/* RECEIVE PAYMENT */}
-        <div className="pt-3">
+        <div className="no-print pt-3">
           <p className="font-semibold">Receive Payment</p>
 
           <div className="flex gap-3">

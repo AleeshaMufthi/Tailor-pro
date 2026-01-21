@@ -60,7 +60,7 @@ const menuItems = [
 
 
   return (
-    <aside className="w-64 bg-white shadow-lg min-h-screen p-12 flex flex-col">
+    <aside className="no-print w-64 bg-white shadow-lg min-h-screen p-12 flex flex-col">
       
       {/* LOGO */}
       <div className="flex items-center gap-2 mb-10">
