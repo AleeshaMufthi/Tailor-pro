@@ -8,6 +8,9 @@
     "start": "next start"
   },
   "dependencies": {
+    "@fullcalendar/daygrid": "^6.1.20",
+    "@fullcalendar/interaction": "^6.1.20",
+    "@fullcalendar/react": "^6.1.20",
     "@hookform/resolvers": "^5.2.2",
     "axios": "^1.13.2",
     "bootstrap-icons": "^1.13.1",
