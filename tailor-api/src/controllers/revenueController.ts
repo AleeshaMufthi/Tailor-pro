@@ -74,8 +74,6 @@ export const getDailyRevenue = async (req: Request, res: Response) => {
       { $sort: { "_id.date": 1 } },
     ]);
 
-    console.log(revenue, "revenue");
-
     res.json(revenue);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch daily revenue" });

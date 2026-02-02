@@ -197,90 +197,100 @@ const totalDeliveries = deliveredOrders.length
     );
   }
 
-  return (
-    <div className="p-6 space-y-8 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold text-emerald-700">
-        Dashboard Analytics
-      </h1>
+return (
+  <div className="bg-gray-50 min-h-screen px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+    {/* Title */}
+    <h1 className="text-2xl sm:text-3xl font-bold text-emerald-700">
+      Dashboard Analytics
+    </h1>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-  {stats.map((stat) => {
-    const color = STAT_COLORS[stat.color || "green"];
+    {/* Stats */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+      {stats.map((stat) => {
+        const color = STAT_COLORS[stat.color || "green"];
 
-    return (
-      <div
-        key={stat.title}
-        className={`rounded-2xl p-4 shadow border-2 flex items-center gap-4
-          ${color.bg} ${color.border}`}
-      >
-        <stat.icon className={`h-10 w-10 ${color.text}`} />
+        return (
+          <div
+            key={stat.title}
+            className={`rounded-2xl p-4 shadow border-2 flex items-center gap-4
+            ${color.bg} ${color.border}`}
+          >
+            <stat.icon
+              className={`h-9 w-9 sm:h-10 sm:w-10 ${color.text}`}
+            />
 
-        <div>
-          <p className="text-sm font-semibold text-gray-600">
-            {stat.title}
-          </p>
-          <p className="text-xl font-bold mt-2">
-            {stat.value}
-          </p>
-        </div>
-      </div>
-    );
-  })}
-</div>
-
-
-      {/* Chart + Upcoming */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Chart */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow border">
-          <h2 className="text-lg font-semibold mb-4">
-            Orders This Week
-          </h2>
-          <ResponsiveContainer width="100%" height={260}>
-            <LineChart data={weeklyOrders}>
-              <XAxis dataKey="day" />
-              <YAxis />
-              <Tooltip />
-              <Line dataKey="orders" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Upcoming */}
-        <div className="bg-white rounded-2xl p-6 shadow border">
-          <h2 className="text-lg font-semibold mb-4">
-            Upcoming Deliveries
-          </h2>
-
-          {upcomingList.length === 0 ? (
-            <p className="text-gray-500">No upcoming deliveries</p>
-          ) : (
-            <ul className="space-y-3">
-              {upcomingList.map((o) => (
-                <li key={o._id} className="flex justify-between">
-                  <span>Order number {o.orderNumber}</span>
-                  <span className="text-gray-500">
-                    {new Date(getItemDates(o)[0]).toLocaleDateString()}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-
-      {/* Overdue Alert */}
-      {overdueOrders > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-6">
-          <h2 className="text-lg font-semibold text-red-700 mb-2">
-            Overdue Orders
-          </h2>
-          <p className="text-red-600">
-            {overdueOrders} orders have crossed the delivery date.
-          </p>
-        </div>
-      )}
+            <div>
+              <p className="text-xs sm:text-sm font-semibold text-gray-600">
+                {stat.title}
+              </p>
+              <p className="text-lg sm:text-xl font-bold mt-1">
+                {stat.value}
+              </p>
+            </div>
+          </div>
+        );
+      })}
     </div>
-  );
+
+    {/* Chart + Upcoming */}
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Chart */}
+      <div className="lg:col-span-2 bg-white rounded-2xl p-4 sm:p-6 shadow border">
+        <h2 className="text-base sm:text-lg font-semibold mb-4">
+          Orders This Week
+        </h2>
+
+        <ResponsiveContainer width="100%" height={240}>
+          <LineChart data={weeklyOrders}>
+            <XAxis dataKey="day" />
+            <YAxis />
+            <Tooltip />
+            <Line dataKey="orders" strokeWidth={2} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Upcoming */}
+      <div className="bg-white rounded-2xl p-4 sm:p-6 shadow border">
+        <h2 className="text-base sm:text-lg font-semibold mb-4">
+          Upcoming Deliveries
+        </h2>
+
+        {upcomingList.length === 0 ? (
+          <p className="text-gray-500 text-sm">
+            No upcoming deliveries
+          </p>
+        ) : (
+          <ul className="space-y-3">
+            {upcomingList.map((o) => (
+              <li
+                key={o._id}
+                className="flex justify-between items-center text-sm"
+              >
+                <span className="truncate max-w-[65%]">
+                  Order #{o.orderNumber}
+                </span>
+                <span className="text-gray-500 whitespace-nowrap">
+                  {new Date(getItemDates(o)[0]).toLocaleDateString()}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+
+    {/* Overdue Alert */}
+    {overdueOrders > 0 && (
+      <div className="bg-red-50 border border-red-200 rounded-2xl p-4 sm:p-6">
+        <h2 className="text-base sm:text-lg font-semibold text-red-700 mb-1">
+          Overdue Orders
+        </h2>
+        <p className="text-sm sm:text-base text-red-600">
+          {overdueOrders} orders have crossed the delivery date.
+        </p>
+      </div>
+    )}
+  </div>
+);
 }

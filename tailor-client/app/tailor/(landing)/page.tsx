@@ -348,8 +348,8 @@ const STAR = (
     src="/landing/image6.png"
     alt="Seamless tailoring experience"
     className="h-full w-full object-cover"
-  />
-</div>
+        />
+        </div>
 
           <div className="bg-gray-200 rounded-2xl p-5 text-lg font-semibold">
             Seamless order creation, instant updates, and clear tracking - so your customers leave saying,

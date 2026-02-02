@@ -92,8 +92,6 @@ export const getStaff = async (req: Request, res: Response) => {
       isActive: true
     }).select("phone email");
 
-    console.log("Fetched staff:", staff);
-
     res.json({ staff });
   } catch {
     res.status(500).json({ message: "Failed to fetch staff" });
