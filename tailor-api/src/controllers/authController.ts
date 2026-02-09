@@ -60,6 +60,11 @@ export const sendOtp = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("sendOtp error:", error);
+    console.log("Error details:", {
+      message: error.message,
+      stack: error.stack,
+    }
+    )
     return res.status(500).json({ message: "Error sending OTP" });
   }
 };
