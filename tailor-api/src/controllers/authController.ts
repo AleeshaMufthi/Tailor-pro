@@ -59,7 +59,7 @@ export const sendOtp = async (req: Request, res: Response) => {
       message: "OTP sent successfully",
     });
   } catch (error) {
-    console.error("sendOtp error:", error);
+    console.error("sendOtp error:", error, error.message, );
     console.log("Error details:", {
       message: error.message,
       stack: error.stack,
