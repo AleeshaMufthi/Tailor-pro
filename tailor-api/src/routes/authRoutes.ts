@@ -11,13 +11,11 @@ router.post("/resend-otp", resendOtp);
 router.post("/logout", (req, res) => {
   res.clearCookie("refreshToken", {
     httpOnly: true,
-    sameSite: "lax",   
-    secure: false,   
+    sameSite: "none",   
+    secure: true,   
     path: "/", 
   });
   return res.json({ message: "Logged out successfully" });
 });
-
-
 
 export default router;

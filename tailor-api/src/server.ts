@@ -28,10 +28,10 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://tailor-axz18k1m6-aleeshamufthis-projects.vercel.app/",
-       /https:\/\/tailor-.*\.vercel\.app$/
+      "https://tailor-axz18k1m6-aleeshamufthis-projects.vercel.app",
+      /https:\/\/tailor-.*\.vercel\.app$/
     ],
-    credentials: true,
+    credentials: true
   })
 );
 
@@ -55,8 +55,6 @@ app.use("/api/revenue", revenueRoutes);
 
 app.use("/api/token", refreshRoute);
 app.use("/api/protected", protectedRoutes);
-
-
 
 const port = process.env.PORT || 4000
 app.listen(port, () => {
