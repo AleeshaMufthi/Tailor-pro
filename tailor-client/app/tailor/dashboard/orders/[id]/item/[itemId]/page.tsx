@@ -128,7 +128,8 @@ const orderId = params.id as string;
 
       {/* All Outfits */}
       <div className="space-y-6">
-        {order.items.map((item: any, index: number) => (
+        {Array.isArray(order.items) && order.items.map((item: any, index: number) => (
+
           <div
             key={item._id}
             className="bg-white p-5 rounded-lg shadow border space-y-4"
@@ -248,7 +249,7 @@ const orderId = params.id as string;
       <h4 className="font-medium mb-3">Standard Measurements</h4>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {Object.entries(item.measurements.defaults as Record<string, number>).map(
+        {Object.entries(item.measurements.defaults as Record<string, string | number>).map(
           ([key, value]) => {
             const config = DEFAULT_MEASUREMENT_CONFIG[key];
 
@@ -257,21 +258,19 @@ const orderId = params.id as string;
                 key={key}
                 className="border rounded-lg p-3 shadow-sm space-y-2"
               >
-                <p>
-                  <strong>
-                    {config?.label ?? key}
-                  </strong>
-                  : {String(value)}
-                </p>
+              <p>
+                <strong>{config?.label ?? key}</strong>:{" "}
+                <span>{String(value)}</span>
+              </p>
 
-                {config?.image && (
+              {config?.image && (
                   <img
                     src={config.image}
                     alt={config.label}
                     className="w-full h-32 object-cover rounded"
                   />
-                )}
-              </div>
+              )}
+            </div>
             );
           }
         )}
@@ -289,7 +288,7 @@ const orderId = params.id as string;
                 <div>
                   <h3 className="font-semibold">Stitch Options</h3>
                   <ul className="ml-4 list-disc">
-                    {Object.entries(item.stitchOptions).map(
+                    {Object.entries(item.stitchOptions as Record<string, string | number>).map(
                       ([key, val]) => (
                         <li key={key}>
                           <strong>{key}:</strong> {String(val)}

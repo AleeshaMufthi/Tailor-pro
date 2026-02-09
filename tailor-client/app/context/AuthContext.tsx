@@ -77,6 +77,11 @@ const logout = async () => {
 
 export function useAuth() {
   const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth must be used inside AuthProvider')
-  return ctx
+  return ctx ?? {
+    user: null,
+    loading: true,
+    setUser: () => {},
+    logout: async () => {}
+  }
 }
+

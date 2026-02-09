@@ -14,7 +14,9 @@ type BreakdownOrder = {
 };
 
 export default function RevenueBreakdownPage() {
-  const { date } = useParams();
+  const params = useParams();
+  const date = params?.date as string;
+
   const [orders, setOrders] = useState<BreakdownOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -54,7 +56,7 @@ export default function RevenueBreakdownPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-gray-900">
-          Revenue Breakdown on {new Date(date as string).toDateString()}
+          Revenue Breakdown on {date ? new Date(date).toDateString() : "Loading..."}
         </h1>
       </div>
 

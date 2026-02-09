@@ -5,7 +5,7 @@ import MainHeader from "@/components/mainHeader";
 import MainFooter from "@/components/MainFooter";
 import ProductSection from "@/components/ProductSection";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import LiquidEther from "@/components/LiquidEther";
+// import LiquidEther from "@/components/LiquidEther";
 import ParallaxItem from "@/components/ParallaxItem";
 import styles from "./bubble.module.css";
 import { useEffect, useState } from "react";

@@ -1,13 +1,16 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState } from "react";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 
 export default function CompleteProfilePage() {
-  const router = useRouter();
-  const { setUser } = useAuth();
+const router = useRouter();
+
+const { setUser } = useAuth();
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
@@ -43,29 +46,24 @@ export default function CompleteProfilePage() {
       setLoading(false);
     }
   };
-
   return (
     <div className="max-w-xl mx-auto mt-20 bg-white p-6 rounded-xl shadow border-2 border-t-emerald-500">
       <h1 className="text-2xl font-semibold text-center mb-6">
         Complete Your Profile
       </h1>
-
       <input
         className="w-full p-3 border rounded mb-4"
         placeholder="Full Name"
         value={fullName}
         onChange={(e) => setFullName(e.target.value)}
       />
-
       <input
         className="w-full p-3 border rounded mb-6"
         placeholder="Phone"
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
       />
-
       <h2 className="font-semibold mb-2">Your Boutiques</h2>
-
       {boutiques.map((b, i) => (
         <input
           key={i}
@@ -79,14 +77,12 @@ export default function CompleteProfilePage() {
           }}
         />
       ))}
-
       <button
         onClick={addBoutique}
         className="mb-4 text-emerald-600 font-semibold"
       >
         + Add another boutique
       </button>
-
       <button
         onClick={handleSubmit}
         disabled={loading}
