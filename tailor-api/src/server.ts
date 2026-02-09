@@ -24,34 +24,23 @@ const app = express()
 
 app.use(cookieParser());
 
-// app.use(cors({
-//   origin: "http://localhost:3000",
-//   credentials: true,
-// }))
-
 
 app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      // "https://tailor-indol.vercel.app",
-      "https://tailor-3c2k7t9hy-aleeshamufthis-projects.vercel.app"
+      "https://tailor-pro-umber.vercel.app"
     ],
     credentials: true
   })
 );
 
 
-
-// app.use(cors({
-//   origin: ["https://tailor-pro-sage.vercel.app"], // your frontend URL
-//   credentials: true
-// }));
-
-
 app.use(express.json())
 
 app.get('/', (_req, res) => res.json({ ok: true, message: 'Tailor API up' }))
+
+app.get('/api/test/testing', (_req, res) => res.json({ ok: true, message: 'Tailor API for testing up' }))
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
