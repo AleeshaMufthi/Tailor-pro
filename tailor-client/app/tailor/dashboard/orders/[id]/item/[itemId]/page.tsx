@@ -261,7 +261,7 @@ const orderId = params.id as string;
                   <strong>
                     {config?.label ?? key}
                   </strong>
-                  : {value}
+                  : {String(value)}
                 </p>
 
                 {config?.image && (

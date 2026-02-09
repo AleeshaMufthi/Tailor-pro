@@ -6,12 +6,19 @@ import MainFooter from "@/components/MainFooter";
 import ProductSection from "@/components/ProductSection";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import LiquidEther from "@/components/LiquidEther";
+import ParallaxItem from "@/components/ParallaxItem";
+import styles from "./bubble.module.css";
 import { useEffect, useState } from "react";
 import IntroSplash from "@/components/IntroSplash";
 
 
+
+
+
+
 export default function MainLanding() {
 
+  // ✅ Hooks MUST be inside the component
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -23,19 +30,22 @@ export default function MainLanding() {
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
+      // Trigger a small scroll event after scrolling
       setTimeout(() => {
         window.dispatchEvent(new Event('scroll'))
       }, 50)
 
+      // Update URL hash
       history.replaceState(null, '', id === 'hero' ? '/' : `#${id}`)
     }
   }
+
 
     const scrollToSectionmax = (id: string) => {
   const el = document.getElementById(id)
   if (!el) return
 
-  const yOffset = window.innerHeight * 0.9 
+  const yOffset = window.innerHeight * 0.9 // 🔥 tune this
   const y =
     el.getBoundingClientRect().top +
     window.pageYOffset +
@@ -46,8 +56,12 @@ export default function MainLanding() {
     behavior: 'smooth',
   })
 
+  // update URL
   history.replaceState(null, '', id === 'hero' ? '/' : `#${id}`)
 }
+
+
+
 
 const [showSplash, setShowSplash] = useState(true)
 
@@ -78,6 +92,7 @@ useEffect(() => {
       }}
 
     >
+
 
 <IntroSplash show={showSplash} logoSrc="/images/Loomiz white.png" brandGreen="#046C4E" />
 
@@ -200,7 +215,7 @@ useEffect(() => {
       md:w-[25rem]
       lg:w-[30rem]
       opacity-70
-      rotate-[-90deg]
+      rotate-[-30deg]
       `,
           },
         ]}
@@ -240,9 +255,9 @@ useEffect(() => {
             src: "/images/shopping bag.png",
             speed: 0.1,
             className: `
-      top-[99%]
+      top-[120%]
       md:top-[99%]
-      lg:top-[90%]
+      lg:top-[99%]
       left-[30%]
       md:left-[20%]
       lg:left-[30%]
@@ -255,9 +270,11 @@ useEffect(() => {
           },
           {
             src: "/images/cart.png",
-            speed: 0.6,
+            speed: 0.3,
             className: `
-      top-[100%]
+      top-[170%]
+      md:top-[150%]
+      lg:top-[150%]
       left-[50%]
       md:left-[60%]
       lg:left-[70%]
@@ -265,14 +282,16 @@ useEffect(() => {
       md:w-[25rem]
       lg:w-[30rem]
       opacity-100
-      rotate-[900deg]
+      rotate-[-900deg]
       `,
           },
           {
             src: "/images/sale.png",
-            speed: 0.6,
+            speed: 0.4,
             className: `
-      top-[150%]
+      top-[200%]
+      md:top-[199%]
+      lg:top-[190%]
       right-[50%]
       md:right-[60%]
       lg:right-[70%]
@@ -317,8 +336,8 @@ useEffect(() => {
             src: "/images/like2.png",
             speed: 0.1,
             className: `
-      top-[99%]
-      md:top-[99%]
+      top-[160%]
+      md:top-[140%]
       lg:top-[90%]
       left-[30%]
       md:left-[20%]
@@ -332,9 +351,11 @@ useEffect(() => {
           },
           {
             src: "/images/comment.png",
-            speed: 0.6,
+            speed: 0.2,
             className: `
-      top-[100%]
+      top-[190%]
+      md:top-[165%]
+      lg:top-[200%]
       left-[50%]
       md:left-[60%]
       lg:left-[70%]
@@ -347,9 +368,11 @@ useEffect(() => {
           },
           {
             src: "/images/hashtag.png",
-            speed: 0.6,
+            speed: 0.3,
             className: `
-      top-[150%]
+      top-[270%]
+      md:top-[260%]
+      lg:top-[340%]
       right-[50%]
       md:right-[60%]
       lg:right-[70%]
