@@ -248,7 +248,7 @@ const orderId = params.id as string;
       <h4 className="font-medium mb-3">Standard Measurements</h4>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {Object.entries(item.measurements.defaults).map(
+        {Object.entries(item.measurements.defaults as Record<string, number>).map(
           ([key, value]) => {
             const config = DEFAULT_MEASUREMENT_CONFIG[key];
 
