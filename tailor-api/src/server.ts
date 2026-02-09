@@ -24,18 +24,18 @@ const app = express()
 
 app.use(cookieParser());
 
-
 app.use(
   cors({
     origin: [
       "http://localhost:3000",
       "https://tailor-axz18k1m6-aleeshamufthis-projects.vercel.app/",
-      "https://tailor-pro-umber.vercel.app"
+       /https:\/\/tailor-.*\.vercel\.app$/
     ],
-    credentials: true
+    credentials: true,
   })
 );
 
+app.options("*", cors());
 
 app.use(express.json())
 
