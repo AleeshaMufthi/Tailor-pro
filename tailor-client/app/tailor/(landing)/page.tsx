@@ -114,7 +114,7 @@ const STAR = (
         </div>
 
         <div className="lg:translate-x-24">
-          <span className="text-emerald-600">Your Store</span> with Tilor
+          <span className="text-emerald-600">Your Store</span> with Tailor
           <span className="text-emerald-600">Pro</span>
         </div>
 
