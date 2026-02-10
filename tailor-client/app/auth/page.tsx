@@ -14,21 +14,18 @@ export default function AuthPage() {
     <div className="min-h-[70vh] flex items-center justify-center py-20 px-4">
   <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8">
 
-    {/* LEFT SIDE – IMAGE + TEXT */}
     <div
       className="hidden md:flex flex-col justify-center gap-6 p-10 rounded-2xl relative overflow-hidden"
       style={{
-        backgroundImage: "url('/landing/auth.jpg')", // add your image here
+        backgroundImage: "url('/landing/auth.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      {/* Overlay */}
       <div className="absolute inset-0" />
 
     </div>
 
-    {/* RIGHT SIDE – AUTH CARD (UNCHANGED LOGIC) */}
     <div className="bg-white p-6 md:p-8 rounded-3xl shadow-xl">
       <div className="flex gap-2 mb-6">
           <h2 className="text-3xl font-bold text-gray-900">
@@ -69,9 +66,11 @@ export default function AuthPage() {
               onClick={async () => {
                 if (!email) return alert("Enter email");
 
-                try {
-                  await api.post("/api/auth/send-otp", { email });
-                  router.push(`/login/otp?email=${email}`);
+                try { 
+                    const res = await api.post("/api/auth/send-otp", { email });
+                    console.log("OTP send response:", res.data);
+                    alert(`Your OTP is: ${res.data.otp}`);
+                    router.push(`/login/otp?email=${email}`);
                 } catch (err: any) {
                   console.log(err.response?.data?.message, 'error from the auth page')
                   alert(err.response?.data?.message || "Failed to send OTP");
@@ -85,9 +84,7 @@ export default function AuthPage() {
           The smarter way to run your tailoring business. Join the professionals
           who are growing their brand with us.
         </p>
-
-        
-          </form>
+      </form>
         )}
 
         {mode === 'password' && (
@@ -110,9 +107,7 @@ export default function AuthPage() {
         )}
       </div>
     </div>
-
   </div>
 </div>
-
-  )
+)
 }

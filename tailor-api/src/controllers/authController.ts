@@ -53,13 +53,14 @@ export const sendOtp = async (req: Request, res: Response) => {
     user.otpExpires = otpExpiry;
     await user.save();
 
-    await sendEmail(email, "Your OTP", `Your OTP is ${otp}`);
+    // await sendEmail(email, "Your OTP", `Your OTP is ${otp}`); ----------> Implement email sending logic here
 
     return res.json({
       message: "OTP sent successfully",
+      otp,
     });
   } catch (error) {
-    console.error("sendOtp error:", error, error.message, );
+    console.error("sendOtp error:", error, error.message, error.stack);
     console.log("Error details:", {
       message: error.message,
       stack: error.stack,
@@ -141,9 +142,9 @@ export const resendOtp = async (req: Request, res: Response) => {
     await user.save();
 
     // TODO: send email here
-    await sendEmail(email, "Your OTP", `Your OTP is ${otp}`);
+    // await sendEmail(email, "Your OTP", `Your OTP is ${otp}`);
 
-    return res.json({ message: "OTP resent successfully" });
+    return res.json({ message: "OTP resent successfully", otp });
   } catch (err) {
     console.error("resendOtp error:", err);
     return res.status(500).json({ message: "Failed to resend OTP" });

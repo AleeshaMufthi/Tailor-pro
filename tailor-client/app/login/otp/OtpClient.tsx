@@ -8,7 +8,7 @@ export default function OtpClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
  
- const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
 
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [timer, setTimer] = useState(60);
@@ -77,9 +77,9 @@ export default function OtpClient() {
   const resendOtp = async () => {
     setLoading(true);
     try {
-      await api.post("/api/auth/resend-otp", { email });
-      alert("OTP resent successfully");
-      setTimer(60);
+    const res = await api.post("/api/auth/resend-otp", { email });
+    alert(`Your new OTP is: ${res.data.otp}`);
+    setTimer(60);
     } catch (err: any) {
       alert(err.response?.data?.message || "Failed to resend");
     }
