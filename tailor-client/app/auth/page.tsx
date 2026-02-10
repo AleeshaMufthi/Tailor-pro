@@ -64,18 +64,40 @@ export default function AuthPage() {
             <button
               type="button"
               onClick={async () => {
-                if (!email) return alert("Enter email");
+  if (!email) return alert("Enter email");
 
-                try { 
-                    const res = await api.post("/api/auth/send-otp", { email });
-                    console.log("OTP send response:", res.data);
-                    alert(`Your OTP is: ${res.data.otp}`);
-                    router.push(`/login/otp?email=${email}`);
-                } catch (err: any) {
-                  console.log(err.response?.data?.message, 'error from the auth page')
-                  alert(err.response?.data?.message || "Failed to send OTP");
-                }
-              }}
+  try { 
+    const res = await api.post("/api/auth/send-otp", { email });
+
+    console.log("OTP send response:", res.data);
+
+    // Show OTP first
+    window.alert(`Your OTP is: ${res.data.otp}`);
+
+    // Delay redirect so alert can show
+    setTimeout(() => {
+      router.push(`/login/otp?email=${email}`);
+    }, 300);
+
+  } catch (err: any) {
+    console.log(err.response?.data?.message, 'error from the auth page')
+    alert(err.response?.data?.message || "Failed to send OTP");
+  }
+}}
+
+              // onClick={async () => {
+              //   if (!email) return alert("Enter email");
+
+              //   try { 
+              //       const res = await api.post("/api/auth/send-otp", { email });
+              //       console.log("OTP send response:", res.data);
+              //       alert(`Your OTP is: ${res.data.otp}`);
+              //       router.push(`/login/otp?email=${email}`);
+              //   } catch (err: any) {
+              //     console.log(err.response?.data?.message, 'error from the auth page')
+              //     alert(err.response?.data?.message || "Failed to send OTP");
+              //   }
+              // }}
               className="w-full bg-emerald-500 text-white py-2.5 rounded-lg font-medium hover:bg-emerald-600 transition"
             >
               Send OTP
