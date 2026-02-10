@@ -58,6 +58,7 @@ export default function OtpClient() {
       console.log(res.data, 'res.data from verify otp')
 
       setAccessToken(res.data.accessToken)
+      localStorage.setItem("accessToken", res.data.accessToken);
 
       if (!res.data.user.isProfileCompleted && res.data.user.role === "owner") {
 

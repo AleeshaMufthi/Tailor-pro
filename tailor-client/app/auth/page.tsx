@@ -136,8 +136,6 @@ export default function AuthPage() {
     </div>
   </div>
 )}
-
-
         {mode === 'password' && (
           <form className="space-y-3">
             <label className="block text-sm">Email</label>

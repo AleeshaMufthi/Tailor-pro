@@ -10,6 +10,15 @@ export const setAccessToken = (t: string | null) => {
   accessToken = t;
 };
 
+// we can have the token in localStorage for persistence. In dev, we want it to reset on refresh for easier testing
+const token = typeof window !== "undefined" 
+  ? localStorage.getItem("accessToken") 
+  : null;
+
+if (token) {
+  setAccessToken(token);
+}
+
 api.interceptors.request.use((config) => {
   if (accessToken && config && config.headers) {
     config.headers.Authorization = `Bearer ${accessToken}`;
