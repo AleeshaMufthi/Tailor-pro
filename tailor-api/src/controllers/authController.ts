@@ -103,8 +103,9 @@ export const verifyOtp = async (req: Request, res: Response) => {
     // Set HttpOnly refresh token cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true, // true in prod
+      secure: true, 
       sameSite: "none",
+      domain: ".onrender.com", // IMPORTANT (or your backend domain)
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
