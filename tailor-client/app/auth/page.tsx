@@ -5,6 +5,9 @@ import api from "@/lib/axios";
 
 
 export default function AuthPage() {
+  const [otpModalOpen, setOtpModalOpen] = useState(false);
+  const [generatedOtp, setGeneratedOtp] = useState("");
+
   const [mode, setMode] = useState<'google'|'otp'|'password'>('otp')
   const [email, setEmail] = useState("");
   const router = useRouter();
@@ -71,19 +74,16 @@ export default function AuthPage() {
 
     console.log("OTP send response:", res.data);
 
-    // Show OTP first
-    window.alert(`Your OTP is: ${res.data.otp}`);
-
-    // Delay redirect so alert can show
-    setTimeout(() => {
-      router.push(`/login/otp?email=${email}`);
-    }, 300);
+    // Store OTP and open modal
+    setGeneratedOtp(res.data.otp);
+    setOtpModalOpen(true);
 
   } catch (err: any) {
     console.log(err.response?.data?.message, 'error from the auth page')
     alert(err.response?.data?.message || "Failed to send OTP");
   }
 }}
+
 
               // onClick={async () => {
               //   if (!email) return alert("Enter email");
@@ -108,6 +108,35 @@ export default function AuthPage() {
         </p>
       </form>
         )}
+
+        {otpModalOpen && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="bg-white rounded-2xl p-6 w-full max-w-sm text-center shadow-xl animate-fade-in">
+
+      <h3 className="text-xl font-semibold mb-2">Your OTP Code</h3>
+
+      <div className="text-3xl font-bold tracking-widest text-emerald-600 my-4">
+        {generatedOtp}
+      </div>
+
+      <p className="text-gray-600 text-sm mb-5">
+        Enter this code on the next screen to continue login.
+      </p>
+
+      <button
+        onClick={() => {
+          setOtpModalOpen(false);
+          router.push(`/login/otp?email=${email}`);
+        }}
+        className="w-full bg-emerald-600 text-white py-2.5 rounded-lg hover:bg-emerald-700 transition"
+      >
+        Continue to Verify OTP
+      </button>
+
+    </div>
+  </div>
+)}
+
 
         {mode === 'password' && (
           <form className="space-y-3">
