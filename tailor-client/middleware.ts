@@ -10,20 +10,22 @@ export function middleware(req: NextRequest) {
   }
 
   // If requesting dashboard and no refresh cookie -> redirect to auth
-  if (pathname.startsWith("/tailor/dashboard")) {
-    const refresh = req.cookies.get("refreshToken")?.value;
-    if (!refresh) {
-      return NextResponse.redirect(new URL("/auth", req.url));
-    }
-  }
+
+  // if (pathname.startsWith("/tailor/dashboard")) {
+  //   const refresh = req.cookies.get("refreshToken")?.value;
+  //   if (!refresh) {
+  //     return NextResponse.redirect(new URL("/auth", req.url));
+  //   }
+  // }
 
   // if user has refresh cookie and goes to /auth or /login, redirect to dashboard
-  if (pathname.startsWith("/auth") || pathname.startsWith("/login")) {
-    const refresh = req.cookies.get("refreshToken")?.value;
-    if (refresh) {
-      return NextResponse.redirect(new URL("/tailor/dashboard", req.url));
-    }
-  }
+  
+  // if (pathname.startsWith("/auth") || pathname.startsWith("/login")) {
+  //   const refresh = req.cookies.get("refreshToken")?.value;
+  //   if (refresh) {
+  //     return NextResponse.redirect(new URL("/tailor/dashboard", req.url));
+  //   }
+  // }
 
   return NextResponse.next();
 }

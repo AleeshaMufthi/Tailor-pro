@@ -16,10 +16,8 @@ type User = {
   userPhoto: string;
   shopPhoto: string;
   role: "owner" | "staff" | "other";
-
   activeBoutique?: string;        // _id of currently active boutique
   boutiques?: string[];           // list of boutique _ids the owner has
-
   boutique?: string
 }
 
@@ -66,7 +64,6 @@ const logout = async () => {
       setUser(null)  
     }
   }
-
 
   return (
     <AuthContext.Provider value={{ user, loading, setUser, logout }}>

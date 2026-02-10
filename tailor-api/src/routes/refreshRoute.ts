@@ -24,7 +24,6 @@ router.post("/refresh", (req, res) => {
   } catch (err) {
     return res.status(403).json({ message: "Invalid refresh token" });
   }
-
 });
 
 export default router;
